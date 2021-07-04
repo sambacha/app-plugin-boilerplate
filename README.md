@@ -1,4 +1,4 @@
-# app-plugin-boilerplate
+# app-plugin-uniswap
 
 Boilerplate repo to get your plugin started!
 

@@ -29,5 +29,5 @@ jobs:
       - name: Upload Boilerplate binary
         uses: actions/upload-artifact@v2
         with:
-          name: boilerplate-app-debug
+          name: uniswap-app-debug
           path: bin

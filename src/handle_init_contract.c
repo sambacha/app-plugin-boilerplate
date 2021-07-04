@@ -1,4 +1,4 @@
-#include "boilerplate_plugin.h"
+#include "uniswap_plugin.h"
 
 // Called once to init.
 void handle_init_contract(void *parameters) {
@@ -13,13 +13,13 @@ void handle_init_contract(void *parameters) {
     }
 
     // TODO: this could be removed as this can be checked statically?
-    if (msg->pluginContextLength < sizeof(boilerplate_parameters_t)) {
+    if (msg->pluginContextLength < sizeof(uniswap_parameters_t)) {
         PRINTF("Plugin parameters structure is bigger than allowed size\n");
         msg->result = ETH_PLUGIN_RESULT_ERROR;
         return;
     }
 
-    boilerplate_parameters_t *context = (boilerplate_parameters_t *) msg->pluginContext;
+    uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
 
     // Initialize the context (to 0).
     memset(context, 0, sizeof(*context));
@@ -28,26 +28,26 @@ void handle_init_contract(void *parameters) {
 
     // Look for the index of the selectorIndex passed in by `msg`.
     uint8_t i;
-    for (i = 0; i < NUM_BOILERPLATE_SELECTORS; i++) {
-        if (memcmp((uint8_t *) PIC(BOILERPLATE_SELECTORS[i]), msg->selector, SELECTOR_SIZE) == 0) {
+    for (i = 0; i < NUM_UNISWAP_SELECTORS; i++) {
+        if (memcmp((uint8_t *) PIC(UNISWAP_SELECTORS[i]), msg->selector, SELECTOR_SIZE) == 0) {
             context->selectorIndex = i;
             break;
         }
     }
 
-    // If `i == NUM_BOILERPLATE_SELECTOR` it means we haven't found the selector. Return an error.
-    if (i == NUM_BOILERPLATE_SELECTORS) {
+    // If `i == NUM_UNISWAP_SELECTOR` it means we haven't found the selector. Return an error.
+    if (i == NUM_UNISWAP_SELECTORS) {
         context->valid = 0;
         msg->result = ETH_PLUGIN_RESULT_UNAVAILABLE;
     }
 
     // Set `next_param` to be the first field we expect to parse.
     switch (context->selectorIndex) {
-        case BOILERPLATE_DUMMY_1:
-            context->next_param = TOKEN_SENT;
+        case ADD_LIQUIDITY_ETH:
+            context->next_param = TOKEN;
             break;
-        case BOILERPLATE_DUMMY_2:
-            context->next_param = TOKEN_RECEIVED;
+        case UNISWAP_DUMMY_2:
+            context->next_param = AMOUNT_TOKEN;
         default:
             PRINTF("Missing selectorIndex\n");
             msg->result = ETH_PLUGIN_RESULT_ERROR;

@@ -33,9 +33,9 @@ APPNAME = "Boilerplate"
 
 #prepare hsm generation
 ifeq ($(TARGET_NAME), TARGET_NANOX)
-ICONNAME=icons/nanox_app_boilerplate.gif
+ICONNAME=icons/nanox_app_uniswap.gif
 else
-ICONNAME=icons/nanos_app_boilerplate.gif
+ICONNAME=icons/nanos_app_uniswap.gif
 endif
 
 ################
@@ -152,4 +152,4 @@ include $(BOLOS_SDK)/Makefile.rules
 dep/%.d: %.c Makefile
 
 listvariants:
-	@echo VARIANTS NONE boilerplate 
+	@echo VARIANTS NONE uniswap 

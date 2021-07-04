@@ -1,8 +1,8 @@
-#include "boilerplate_plugin.h"
+#include "uniswap_plugin.h"
 
 void handle_provide_token(void *parameters) {
     ethPluginProvideToken_t *msg = (ethPluginProvideToken_t *) parameters;
-    boilerplate_parameters_t *context = (boilerplate_parameters_t *) msg->pluginContext;
+    uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
     PRINTF("plugin provide token: 0x%p, 0x%p\n", msg->token1, msg->token2);
 
     if (msg->token1) {
@@ -10,7 +10,7 @@ void handle_provide_token(void *parameters) {
         strncpy(context->ticker_sent, (char *) msg->token1->ticker, sizeof(context->ticker_sent));
 
         // Keep track that we found the token.
-        context->tokens_found |= TOKEN_SENT_FOUND;
+        context->tokens_found |= TOKEN_FOUND;
     } else {
         context->decimals_sent = DEFAULT_DECIMAL;
         strncpy(context->ticker_sent, DEFAULT_TICKER, sizeof(context->ticker_sent));
@@ -25,7 +25,7 @@ void handle_provide_token(void *parameters) {
                 sizeof(context->ticker_received));
 
         // Keep track that we found the token.
-        context->tokens_found |= TOKEN_RECEIVED_FOUND;
+        context->tokens_found |= AMOUNT_TOKEN_FOUND;
     } else {
         context->decimals_received = DEFAULT_DECIMAL;
         strncpy(context->ticker_received, DEFAULT_TICKER, sizeof(context->ticker_received));

@@ -1,4 +1,4 @@
-#include "boilerplate_plugin.h"
+#include "uniswap_plugin.h"
 
 // Prepend `dest` with `ticker`.
 // Dest must be big enough to hold `ticker` + `dest` + `\0`.
@@ -26,12 +26,12 @@ static void prepend_ticker(char *dest, uint8_t destsize, char *ticker) {
 }
 
 // Set UI for the "Send" screen.
-static void set_send_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *context) {
+static void set_send_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
-        case BOILERPLATE_DUMMY_1:
+        case ADD_LIQUIDITY_ETH:
             strncpy(msg->title, "Send", msg->titleLength);
             break;
-        case BOILERPLATE_DUMMY_2:
+        case UNISWAP_DUMMY_2:
             strncpy(msg->title, "Send Max", msg->titleLength);
             break;
         default:
@@ -40,8 +40,8 @@ static void set_send_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *con
             return;
     }
 
-    adjustDecimals((char *) context->amount_sent,
-                   strnlen((char *) context->amount_sent, sizeof(context->amount_sent)),
+    adjustDecimals((char *) context->token_amount_deposited,
+                   strnlen((char *) context->token_amount_deposited, sizeof(context->token_amount_deposited)),
                    msg->msg,
                    msg->msgLength,
                    context->decimals_sent);
@@ -50,12 +50,12 @@ static void set_send_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *con
 }
 
 // Set UI for "Receive" screen.
-static void set_receive_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *context) {
+static void set_receive_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
-        case BOILERPLATE_DUMMY_1:
+        case ADD_LIQUIDITY_ETH:
             strncpy(msg->title, "Receive Min", msg->titleLength);
             break;
-        case BOILERPLATE_DUMMY_2:
+        case UNISWAP_DUMMY_2:
             strncpy(msg->title, "Receive", msg->titleLength);
             break;
         default:
@@ -64,8 +64,8 @@ static void set_receive_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *
             return;
     }
 
-    adjustDecimals((char *) context->amount_received,
-                   strnlen((char *) context->amount_received, sizeof(context->amount_received)),
+    adjustDecimals((char *) context->token_amount_deposited,
+                   strnlen((char *) context->token_amount_deposited, sizeof(context->token_amount_deposited)),
                    msg->msg,
                    msg->msgLength,
                    context->decimals_received);
@@ -74,7 +74,7 @@ static void set_receive_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *
 }
 
 // Set UI for "Beneficiary" screen.
-static void set_beneficiary_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *context) {
+static void set_beneficiary_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     strncpy(msg->title, "Beneficiary", msg->titleLength);
 
     msg->msg[0] = '0';
@@ -90,18 +90,18 @@ static void set_beneficiary_ui(ethQueryContractUI_t *msg, boilerplate_parameters
 
 // Set UI for "Warning" screen.
 static void set_warning_ui(ethQueryContractUI_t *msg,
-                           boilerplate_parameters_t *context __attribute__((unused))) {
+                           uniswap_parameters_t *context __attribute__((unused))) {
     strncpy(msg->title, "WARNING", msg->titleLength);
     strncpy(msg->msg, "Unknown token", msg->msgLength);
 }
 
 // Helper function that returns the enum corresponding to the screen that should
 // be displayed.
-static screens_t get_screen(ethQueryContractUI_t *msg, boilerplate_parameters_t *context) {
+static screens_t get_screen(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     uint8_t index = msg->screenIndex;
 
-    bool token_sent_found = context->tokens_found & TOKEN_SENT_FOUND;
-    bool token_received_found = context->tokens_found & TOKEN_RECEIVED_FOUND;
+    bool token_sent_found = context->tokens_found & TOKEN_FOUND;
+    bool token_received_found = context->tokens_found & AMOUNT_TOKEN_FOUND;
 
     bool both_tokens_found = token_received_found && token_sent_found;
     bool both_tokens_not_found = !token_received_found && !token_sent_found;
@@ -154,7 +154,7 @@ static screens_t get_screen(ethQueryContractUI_t *msg, boilerplate_parameters_t 
 
 void handle_query_contract_ui(void *parameters) {
     ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
-    boilerplate_parameters_t *context = (boilerplate_parameters_t *) msg->pluginContext;
+    uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
 
     memset(msg->title, 0, msg->titleLength);
     memset(msg->msg, 0, msg->msgLength);
