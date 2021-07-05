@@ -8,7 +8,7 @@ void handle_query_contract_id(void *parameters) {
 
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
-            strncpy(msg->version, "Send", msg->versionLength);
+            strncpy(msg->version, "Add liquidity", msg->versionLength);
             break;
         case UNISWAP_DUMMY_2:
             strncpy(msg->version, "Receive", msg->versionLength);

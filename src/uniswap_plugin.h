@@ -68,13 +68,14 @@ typedef struct uniswap_parameters_t {
     char beneficiary[ADDRESS_LENGTH];
     uint8_t contract_token_address[ADDRESS_LENGTH];
     uint8_t contract_address_received[ADDRESS_LENGTH];
-    char ticker_sent[MAX_TICKER_LEN];
+    char ticker_token[MAX_TICKER_LEN];
     char ticker_received[MAX_TICKER_LEN];
+    bool should_warn;
 
     uint8_t next_param;
     uint8_t tokens_found;
     uint8_t valid;
-    uint8_t decimals_sent;
+    uint8_t decimals_token;
     uint8_t decimals_received;
     uint8_t selectorIndex;
 } uniswap_parameters_t;

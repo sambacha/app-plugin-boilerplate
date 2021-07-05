@@ -67,15 +67,19 @@ static void handle_add_liquidity_eth(ethPluginProvideParameter_t *msg, uniswap_p
             break;
         case AMOUNT_TOKEN:  // token amount deposited
             handle_token_amount(msg, context);
+            PRINTF("after\n");
             context->next_param = AMOUNT_TOKEN_MIN;
             break;
         case AMOUNT_TOKEN_MIN:  // not used
+            PRINTF("token min\n");
             context->next_param = AMOUNT_ETH_MIN;
             break;
         case AMOUNT_ETH_MIN:  // not used
+            PRINTF("eth min\n");
             context->next_param = BENEFICIARY;
             break;
         case BENEFICIARY:  // address receiving liquitity tokens
+            PRINTF("benef min\n");
             handle_beneficiary(msg, context);
             context->next_param = DEADLINE;
             break;

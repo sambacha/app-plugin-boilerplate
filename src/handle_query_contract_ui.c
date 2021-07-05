@@ -44,20 +44,20 @@ static void set_send_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context
                    strnlen((char *) context->token_amount_deposited, sizeof(context->token_amount_deposited)),
                    msg->msg,
                    msg->msgLength,
-                   context->decimals_sent);
+                   context->decimals_token);
 
-    prepend_ticker(msg->msg, msg->msgLength, context->ticker_sent);
+    prepend_ticker(msg->msg, msg->msgLength, context->ticker_token);
 }
 
 // Set UI for "Receive" screen.
-static void set_receive_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+static void set_amount_token_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
-            strncpy(msg->title, "Receive Min", msg->titleLength);
+            strncpy(msg->title, "Deposit", msg->titleLength);
             break;
-        case UNISWAP_DUMMY_2:
-            strncpy(msg->title, "Receive", msg->titleLength);
-            break;
+        //case UNISWAP_DUMMY_2:
+        //    strncpy(msg->title, "Receive", msg->titleLength);
+        //    break;
         default:
             PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
             msg->result = ETH_PLUGIN_RESULT_ERROR;
@@ -70,8 +70,42 @@ static void set_receive_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *cont
                    msg->msgLength,
                    context->decimals_received);
 
-    prepend_ticker(msg->msg, msg->msgLength, context->ticker_received);
+    prepend_ticker(msg->msg, msg->msgLength, context->ticker_token);
 }
+
+// Set UI for "Receive" screen.
+static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+    switch (context->selectorIndex) {
+        case ADD_LIQUIDITY_ETH:
+            strncpy(msg->title, "Deposit", msg->titleLength);
+            break;
+        //case UNISWAP_DUMMY_2:
+        //    strncpy(msg->title, "Receive", msg->titleLength);
+        //    break;
+        default:
+            PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            return;
+    }
+
+    char str_decimals[40];
+    // uint8_t jean = (uint8_t) msg->pluginSharedRO->txContent->value;
+    memset(str_decimals, 0, 40);
+
+    amountToString(
+        (uint8_t *) msg->pluginSharedRO->txContent->value.value,
+        sizeof((uint8_t *) msg->pluginSharedRO->txContent->value.value), // value.length
+        WEI_TO_ETHER, "ETH", str_decimals, 40);
+
+    adjustDecimals(str_decimals,
+                   strnlen(str_decimals, 40),
+                   msg->msg,
+                   msg->msgLength,
+                   WEI_TO_ETHER);
+
+    prepend_ticker(msg->msg, msg->msgLength, "ETH");
+}
+
 
 // Set UI for "Beneficiary" screen.
 static void set_beneficiary_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
@@ -95,61 +129,26 @@ static void set_warning_ui(ethQueryContractUI_t *msg,
     strncpy(msg->msg, "Unknown token", msg->msgLength);
 }
 
-// Helper function that returns the enum corresponding to the screen that should
-// be displayed.
-static screens_t get_screen(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-    uint8_t index = msg->screenIndex;
+static void set_pool_ui(ethQueryContractUI_t *msg,
+                        uniswap_parameters_t *context) {
+    strncpy(msg->title, "Pool:", msg->titleLength);
+    snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token, "ETH");
+}
 
-    bool token_sent_found = context->tokens_found & TOKEN_FOUND;
-    bool token_received_found = context->tokens_found & AMOUNT_TOKEN_FOUND;
+static void check_if_address_is_user_address(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
 
-    bool both_tokens_found = token_received_found && token_sent_found;
-    bool both_tokens_not_found = !token_received_found && !token_sent_found;
+    char user_address[ADDRESS_LENGTH];
 
-    if (index == 0) {
-        if (both_tokens_found) {
-            return SEND_SCREEN;
-        } else if (both_tokens_not_found) {
-            return WARN_SCREEN;
-        } else if (token_sent_found) {
-            return SEND_SCREEN;
-        } else if (token_received_found) {
-            return WARN_SCREEN;
-        }
-    } else if (index == 1) {
-        if (both_tokens_found) {
-            return RECEIVE_SCREEN;
-        } else if (both_tokens_not_found) {
-            return SEND_SCREEN;
-        } else if (token_sent_found) {
-            return WARN_SCREEN;
-        } else if (token_received_found) {
-            return SEND_SCREEN;
-        }
-    } else if (index == 2) {
-        if (both_tokens_found) {
-            return BENEFICIARY_SCREEN;
-        } else if (both_tokens_not_found) {
-            return WARN_SCREEN;
-        } else {
-            return RECEIVE_SCREEN;
-        }
-    } else if (index == 3) {
-        if (both_tokens_found) {
-            return ERROR;
-        } else if (both_tokens_not_found) {
-            return RECEIVE_SCREEN;
-        } else {
-            return BENEFICIARY_SCREEN;
-        }
-    } else if (index == 4) {
-        if (both_tokens_not_found) {
-            return BENEFICIARY_SCREEN;
-        } else {
-            return ERROR;
-        }
+    get_public_key(msg->pluginSharedRO->bip32Path,
+    sizeof(msg->pluginSharedRO->bip32Path),
+    msg->pluginSharedRW->sha3,
+    user_address, ADDRESS_LENGTH);
+
+    if (memcmp(context->beneficiary, user_address, ADDRESS_LENGTH))
+    {
+        strncpy(msg->title, "WARNING", msg->titleLength);
+        strncpy(msg->msg, "Not user's address", msg->titleLength);
     }
-    return ERROR;
 }
 
 void handle_query_contract_ui(void *parameters) {
@@ -160,23 +159,25 @@ void handle_query_contract_ui(void *parameters) {
     memset(msg->msg, 0, msg->msgLength);
     msg->result = ETH_PLUGIN_RESULT_OK;
 
-    screens_t screen = get_screen(msg, context);
-    switch (screen) {
-        case SEND_SCREEN:
-            set_send_ui(msg, context);
+    switch (msg->screenIndex) {
+        case 0:
+            if (context->tokens_found & TOKEN_FOUND)
+                set_pool_ui(msg, context);
+            else
+                set_warning_ui(msg, context);
             break;
-        case RECEIVE_SCREEN:
-            set_receive_ui(msg, context);
+        case 1:
+            set_amount_token_ui(msg, context);
             break;
-        case BENEFICIARY_SCREEN:
-            set_beneficiary_ui(msg, context);
+        case 2:
+            set_amount_eth_ui(msg, context);
             break;
-        case WARN_SCREEN:
-            set_warning_ui(msg, context);
+        case 3:
+
             break;
         default:
             PRINTF("Received an invalid screenIndex\n");
             msg->result = ETH_PLUGIN_RESULT_ERROR;
-            return;
+            break;
     }
 }

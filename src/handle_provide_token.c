@@ -6,29 +6,14 @@ void handle_provide_token(void *parameters) {
     PRINTF("plugin provide token: 0x%p, 0x%p\n", msg->token1, msg->token2);
 
     if (msg->token1) {
-        context->decimals_sent = msg->token1->decimals;
-        strncpy(context->ticker_sent, (char *) msg->token1->ticker, sizeof(context->ticker_sent));
+        context->decimals_token = msg->token1->decimals;
+        strncpy(context->ticker_token, (char *) msg->token1->ticker, sizeof(context->ticker_token));
 
         // Keep track that we found the token.
         context->tokens_found |= TOKEN_FOUND;
     } else {
-        context->decimals_sent = DEFAULT_DECIMAL;
-        strncpy(context->ticker_sent, DEFAULT_TICKER, sizeof(context->ticker_sent));
-
-        // We will need an additional screen to display a warning message.
-        msg->additionalScreens++;
-    }
-    if (msg->token2) {
-        context->decimals_received = msg->token2->decimals;
-        strncpy(context->ticker_received,
-                (char *) msg->token2->ticker,
-                sizeof(context->ticker_received));
-
-        // Keep track that we found the token.
-        context->tokens_found |= AMOUNT_TOKEN_FOUND;
-    } else {
-        context->decimals_received = DEFAULT_DECIMAL;
-        strncpy(context->ticker_received, DEFAULT_TICKER, sizeof(context->ticker_received));
+        context->decimals_token = DEFAULT_DECIMAL;
+        strncpy(context->ticker_token, DEFAULT_TICKER, sizeof(context->ticker_token));
 
         // We will need an additional screen to display a warning message.
         msg->additionalScreens++;
