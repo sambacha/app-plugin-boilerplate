@@ -94,7 +94,7 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
 
     amountToString(
         (uint8_t *) msg->pluginSharedRO->txContent->value.value,
-        sizeof((uint8_t *) msg->pluginSharedRO->txContent->value.value), // value.length
+        msg->pluginSharedRO->txContent->value.length, // value.length
         WEI_TO_ETHER, "ETH", str_decimals, 40);
 
     adjustDecimals(str_decimals,
@@ -139,10 +139,10 @@ static void check_if_address_is_user_address(ethQueryContractUI_t *msg, uniswap_
 
     char user_address[ADDRESS_LENGTH];
 
-    get_public_key(msg->pluginSharedRO->bip32Path,
-    sizeof(msg->pluginSharedRO->bip32Path),
-    msg->pluginSharedRW->sha3,
-    user_address, ADDRESS_LENGTH);
+    //get_public_key(msg->pluginSharedRO->bip32Path,
+    //sizeof(msg->pluginSharedRO->bip32Path),
+    //msg->pluginSharedRW->sha3,
+    //user_address, ADDRESS_LENGTH);
 
     if (memcmp(context->beneficiary, user_address, ADDRESS_LENGTH))
     {
