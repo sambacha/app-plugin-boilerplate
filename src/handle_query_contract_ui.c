@@ -40,11 +40,12 @@ static void set_send_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context
             return;
     }
 
-    adjustDecimals((char *) context->token_amount_deposited,
-                   strnlen((char *) context->token_amount_deposited, sizeof(context->token_amount_deposited)),
-                   msg->msg,
-                   msg->msgLength,
-                   context->decimals_token);
+    adjustDecimals(
+        (char *) context->token_amount_deposited,
+        strnlen((char *) context->token_amount_deposited, sizeof(context->token_amount_deposited)),
+        msg->msg,
+        msg->msgLength,
+        context->decimals_token);
 
     prepend_ticker(msg->msg, msg->msgLength, context->ticker_token);
 }
@@ -55,7 +56,7 @@ static void set_amount_token_ui(ethQueryContractUI_t *msg, uniswap_parameters_t 
         case ADD_LIQUIDITY_ETH:
             strncpy(msg->title, "Deposit", msg->titleLength);
             break;
-        //case UNISWAP_DUMMY_2:
+        // case UNISWAP_DUMMY_2:
         //    strncpy(msg->title, "Receive", msg->titleLength);
         //    break;
         default:
@@ -64,11 +65,12 @@ static void set_amount_token_ui(ethQueryContractUI_t *msg, uniswap_parameters_t 
             return;
     }
 
-    adjustDecimals((char *) context->token_amount_deposited,
-                   strnlen((char *) context->token_amount_deposited, sizeof(context->token_amount_deposited)),
-                   msg->msg,
-                   msg->msgLength,
-                   context->decimals_received);
+    adjustDecimals(
+        (char *) context->token_amount_deposited,
+        strnlen((char *) context->token_amount_deposited, sizeof(context->token_amount_deposited)),
+        msg->msg,
+        msg->msgLength,
+        context->decimals_token);
 
     prepend_ticker(msg->msg, msg->msgLength, context->ticker_token);
 }
@@ -79,7 +81,7 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
         case ADD_LIQUIDITY_ETH:
             strncpy(msg->title, "Deposit", msg->titleLength);
             break;
-        //case UNISWAP_DUMMY_2:
+        // case UNISWAP_DUMMY_2:
         //    strncpy(msg->title, "Receive", msg->titleLength);
         //    break;
         default:
@@ -88,24 +90,13 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
             return;
     }
 
-    char str_decimals[40];
-    // uint8_t jean = (uint8_t) msg->pluginSharedRO->txContent->value;
-    memset(str_decimals, 0, 40);
-
-    amountToString(
-        (uint8_t *) msg->pluginSharedRO->txContent->value.value,
-        msg->pluginSharedRO->txContent->value.length, // value.length
-        WEI_TO_ETHER, "ETH", str_decimals, 40);
-
-    adjustDecimals(str_decimals,
-                   strnlen(str_decimals, 40),
+    amountToString((uint8_t *) msg->pluginSharedRO->txContent->value.value,
+                   msg->pluginSharedRO->txContent->value.length,  // value.length
+                   WEI_TO_ETHER,
+                   "ETH ",
                    msg->msg,
-                   msg->msgLength,
-                   WEI_TO_ETHER);
-
-    prepend_ticker(msg->msg, msg->msgLength, "ETH");
+                   msg->msgLength);
 }
-
 
 // Set UI for "Beneficiary" screen.
 static void set_beneficiary_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
@@ -129,23 +120,21 @@ static void set_warning_ui(ethQueryContractUI_t *msg,
     strncpy(msg->msg, "Unknown token", msg->msgLength);
 }
 
-static void set_pool_ui(ethQueryContractUI_t *msg,
-                        uniswap_parameters_t *context) {
+static void set_pool_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     strncpy(msg->title, "Pool:", msg->titleLength);
     snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token, "ETH");
 }
 
-static void check_if_address_is_user_address(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-
+static void check_if_address_is_user_address(ethQueryContractUI_t *msg,
+                                             uniswap_parameters_t *context) {
     char user_address[ADDRESS_LENGTH];
 
-    //get_public_key(msg->pluginSharedRO->bip32Path,
-    //sizeof(msg->pluginSharedRO->bip32Path),
-    //msg->pluginSharedRW->sha3,
-    //user_address, ADDRESS_LENGTH);
+    // get_public_key(msg->pluginSharedRO->bip32Path,
+    // sizeof(msg->pluginSharedRO->bip32Path),
+    // msg->pluginSharedRW->sha3,
+    // user_address, ADDRESS_LENGTH);
 
-    if (memcmp(context->beneficiary, user_address, ADDRESS_LENGTH))
-    {
+    if (memcmp(context->beneficiary, user_address, ADDRESS_LENGTH)) {
         strncpy(msg->title, "WARNING", msg->titleLength);
         strncpy(msg->msg, "Not user's address", msg->titleLength);
     }
