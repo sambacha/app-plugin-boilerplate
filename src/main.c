@@ -26,17 +26,14 @@
 
 // Define here all the selectors you wish to support.
 
-// Example of selector 1
 static const uint8_t UNISWAP_ADD_LIQUIDITY_ETH[SELECTOR_SIZE] = {0xf3, 0x05, 0xd7, 0x19};
-// Example of selector 2
-
-static const uint8_t UNISWAP_DUMMY_SELECTOR_2[SELECTOR_SIZE] = {0x13, 0x37, 0x42, 0x42};
+static const uint8_t UNISWAP_ADD_LIQUIDITY[SELECTOR_SIZE] = {0xe8, 0xe3, 0x37, 0x00};
 
 // Array of all the different uniswap selectors. Make sure this follows the same order as the
 // enum defined in `uniswap_plugin.h`
 const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS] = {
     UNISWAP_ADD_LIQUIDITY_ETH,
-    UNISWAP_DUMMY_SELECTOR_2,
+    UNISWAP_ADD_LIQUIDITY,
 };
 
 // Function to dispatch calls from the ethereum app.

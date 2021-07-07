@@ -46,8 +46,8 @@ void handle_init_contract(void *parameters) {
         case ADD_LIQUIDITY_ETH:
             context->next_param = TOKEN;
             break;
-        case UNISWAP_DUMMY_2:
-            context->next_param = AMOUNT_TOKEN;
+        case ADD_LIQUIDITY:
+            // context->next_param = AMOUNT_TOKEN;
         default:
             PRINTF("Missing selectorIndex\n");
             msg->result = ETH_PLUGIN_RESULT_ERROR;

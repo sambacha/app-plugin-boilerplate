@@ -31,7 +31,7 @@ static void set_send_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context
         case ADD_LIQUIDITY_ETH:
             strncpy(msg->title, "Send", msg->titleLength);
             break;
-        case UNISWAP_DUMMY_2:
+        case ADD_LIQUIDITY:
             strncpy(msg->title, "Send Max", msg->titleLength);
             break;
         default:

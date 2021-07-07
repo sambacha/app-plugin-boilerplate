@@ -23,14 +23,14 @@
 #define PLUGIN_NAME "Uniswap"
 
 // TODO: add doc.
-#define TOKEN_FOUND     1
+#define TOKEN_FOUND        1
 #define AMOUNT_TOKEN_FOUND (1 << 1)
 
 // Enumeration of the different selectors possible.
 // Should follow the array declared in main.c
 typedef enum {
     ADD_LIQUIDITY_ETH,
-    UNISWAP_DUMMY_2,
+    ADD_LIQUIDITY,
 } uniswapSelector_t;
 
 // Enumeration used to parse the smart-contract data.

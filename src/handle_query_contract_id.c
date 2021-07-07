@@ -10,7 +10,7 @@ void handle_query_contract_id(void *parameters) {
         case ADD_LIQUIDITY_ETH:
             strncpy(msg->version, "Add liquidity", msg->versionLength);
             break;
-        case UNISWAP_DUMMY_2:
+        case ADD_LIQUIDITY:
             strncpy(msg->version, "Receive", msg->versionLength);
             break;
         default:
