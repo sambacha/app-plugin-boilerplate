@@ -7,13 +7,29 @@ void handle_provide_token(void *parameters) {
 
     if (msg->token1) {
         context->decimals_token = msg->token1->decimals;
-        strncpy(context->ticker_token, (char *) msg->token1->ticker, sizeof(context->ticker_token));
+        strncpy(context->ticker_token_a, (char *) msg->token1->ticker, sizeof(context->ticker_token_a));
 
         // Keep track that we found the token.
         context->tokens_found |= TOKEN_FOUND;
     } else {
         context->decimals_token = DEFAULT_DECIMAL;
-        strncpy(context->ticker_token, DEFAULT_TICKER, sizeof(context->ticker_token));
+        strncpy(context->ticker_token_a, DEFAULT_TICKER, sizeof(context->ticker_token_a));
+
+        // We will need an additional screen to display a warning message.
+        msg->additionalScreens++;
+    }
+
+    if (msg->token2 || context->selectorIndex == ADD_LIQUIDITY_ETH) {
+        if (msg->token2) {
+            context->decimals_token = msg->token2->decimals;
+            strncpy(context->ticker_token_b, (char *) msg->token2->ticker, sizeof(context->ticker_token_b));
+
+            // Keep track that we found the token.
+            context->tokens_found |= TOKEN_FOUND;
+        }
+    } else {
+        context->decimals_token = DEFAULT_DECIMAL;
+        strncpy(context->ticker_token_b, DEFAULT_TICKER, sizeof(context->ticker_token_b));
 
         // We will need an additional screen to display a warning message.
         msg->additionalScreens++;

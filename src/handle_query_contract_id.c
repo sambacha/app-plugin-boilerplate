@@ -8,10 +8,9 @@ void handle_query_contract_id(void *parameters) {
 
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
+        case ADD_LIQUIDITY:
             strncpy(msg->version, "Add liquidity", msg->versionLength);
             break;
-        case ADD_LIQUIDITY:
-            strncpy(msg->version, "Receive", msg->versionLength);
             break;
         default:
             PRINTF("Selector Index :%d not supported\n", context->selectorIndex);

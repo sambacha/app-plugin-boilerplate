@@ -35,9 +35,12 @@ typedef enum {
 
 // Enumeration used to parse the smart-contract data.
 typedef enum {
-    TOKEN,
-    AMOUNT_TOKEN,
-    AMOUNT_TOKEN_MIN,
+    TOKEN_A_ADDRESS,
+    TOKEN_B_ADDRESS,
+    AMOUNT_TOKEN_A,
+    AMOUNT_TOKEN_B,
+    AMOUNT_TOKEN_A_MIN,
+    AMOUNT_TOKEN_B_MIN,
     AMOUNT_ETH_MIN,
     BENEFICIARY,
     DEADLINE,
@@ -45,13 +48,13 @@ typedef enum {
 } selectorField;
 
 // Enumeration of different screens that the plugin might display.
-typedef enum {
-    SEND_SCREEN,
-    RECEIVE_SCREEN,
-    BENEFICIARY_SCREEN,
-    WARN_SCREEN,
-    ERROR,  // This variant indicates that an error occured. No display should occur.
-} screens_t;
+//typedef enum {
+//    SEND_SCREEN,
+//    RECEIVE_SCREEN,
+//    BENEFICIARY_SCREEN,
+//    WARN_SCREEN,
+//    ERROR,  // This variant indicates that an error occured. No display should occur.
+//} screens_t;
 
 extern const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS];
 
@@ -63,13 +66,14 @@ extern const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS];
 
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
 typedef struct uniswap_parameters_t {
-    //// uint8_t token_amount_deposited[INT256_LENGTH];
-    uint8_t token_amount_deposited[INT256_LENGTH];
+    uint8_t token_a_address[ADDRESS_LENGTH];
+    uint8_t token_b_address[ADDRESS_LENGTH];
+    uint8_t token_a_amount_sent[INT256_LENGTH];
+    uint8_t token_b_amount_sent[INT256_LENGTH];
+    char ticker_token_a[MAX_TICKER_LEN];
+    char ticker_token_b[MAX_TICKER_LEN];
     char beneficiary[ADDRESS_LENGTH];
-    uint8_t contract_token_address[ADDRESS_LENGTH];
-    uint8_t contract_address_received[ADDRESS_LENGTH];
-    char ticker_token[MAX_TICKER_LEN];
-    char ticker_received[MAX_TICKER_LEN];
+//    uint8_t contract_address_received[ADDRESS_LENGTH];
     bool should_warn;
 
     uint8_t next_param;

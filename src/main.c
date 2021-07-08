@@ -42,20 +42,26 @@ void dispatch_plugin_calls(int message, void *parameters) {
     switch (message) {
         case ETH_PLUGIN_INIT_CONTRACT:
             handle_init_contract(parameters);
+		PRINTF("PROUT INIT\n");
             break;
         case ETH_PLUGIN_PROVIDE_PARAMETER:
+		PRINTF("PROVIDE\n");
             handle_provide_parameter(parameters);
             break;
         case ETH_PLUGIN_FINALIZE:
+		PRINTF("FINALIZE\n");
             handle_finalize(parameters);
             break;
         case ETH_PLUGIN_PROVIDE_TOKEN:
+		PRINTF("PROVIDE\n");
             handle_provide_token(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_ID:
+		PRINTF("ID\n");
             handle_query_contract_id(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_UI:
+		PRINTF("UI\n");
             handle_query_contract_ui(parameters);
             break;
         default:

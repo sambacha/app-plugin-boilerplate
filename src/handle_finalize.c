@@ -9,16 +9,23 @@ void handle_finalize(void *parameters) {
 
     print_bytes(msg->address, ADDRESS_LENGTH);
 
-    if (memcmp(msg->address, context->beneficiary, ADDRESS_LENGTH)) {
+    if (memcmp(msg->address, context->beneficiary, ADDRESS_LENGTH))
         context->should_warn = 1;
-    }
 
     if (context->valid) {
         msg->uiType = ETH_UI_TYPE_GENERIC;
-        msg->numScreens = 3;
-        if (context->should_warn) msg->numScreens++;
+        switch (context->selectorIndex) {
+            case ADD_LIQUIDITY_ETH:
+            case ADD_LIQUIDITY:
+                msg->numScreens = 4;
+                break;
+                break;
+        }
+        if (context->should_warn) 
+            msg->numScreens++;
 
-        msg->tokenLookup1 = context->contract_token_address;  // TODO: CHECK THIS
+        msg->tokenLookup1 = context->token_a_address;  // TODO: CHECK THIS
+        msg->tokenLookup2 = context->token_b_address;  // TODO: CHECK THIS
         msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Invalid context\n");

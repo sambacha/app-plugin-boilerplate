@@ -42,12 +42,14 @@ void handle_init_contract(void *parameters) {
     }
 
     // Set `next_param` to be the first field we expect to parse.
+    PRINTF("selector: %u", context->selectorIndex);
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
-            context->next_param = TOKEN;
+            context->next_param = TOKEN_A_ADDRESS;
             break;
         case ADD_LIQUIDITY:
-            // context->next_param = AMOUNT_TOKEN;
+            // context->next_param = AMOUNT_TOKEN_A;
+            break;
         default:
             PRINTF("Missing selectorIndex\n");
             msg->result = ETH_PLUGIN_RESULT_ERROR;
