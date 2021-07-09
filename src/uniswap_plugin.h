@@ -22,10 +22,17 @@
 // Name of the plugin.
 #define PLUGIN_NAME "Uniswap"
 
-// TODO: add doc.
-#define TOKEN_FOUND        1
-#define AMOUNT_TOKEN_FOUND (1 << 1)
+// screeen array correspondance
+#define TX_TYPE_UI 1
+#define WARNING_TOKEN_A_UI (1 << 1)
+#define AMOUNT_TOKEN_A_UI (1 << 2)
+#define WARNING_TOKEN_B_UI (1 << 3)
+#define AMOUNT_TOKEN_B_UI (1 << 4)
+#define WARNING_ADDRESS_UI (1 << 5)
+#define ADDRESS_UI (1 << 6)
 
+#define RIGHT_SCROLL 1
+#define LEFT_SCROLL 0
 // Enumeration of the different selectors possible.
 // Should follow the array declared in main.c
 typedef enum {
@@ -62,7 +69,7 @@ extern const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS];
 #define DEFAULT_DECIMAL WEI_TO_ETHER
 
 // Ticker used when the token wasn't found in the Crypto Asset List.
-#define DEFAULT_TICKER ""
+#define DEFAULT_TICKER "? "
 
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
 typedef struct uniswap_parameters_t {
@@ -73,16 +80,21 @@ typedef struct uniswap_parameters_t {
     char ticker_token_a[MAX_TICKER_LEN];
     char ticker_token_b[MAX_TICKER_LEN];
     char beneficiary[ADDRESS_LENGTH];
-//    uint8_t contract_address_received[ADDRESS_LENGTH];
-    bool should_warn;
+    bool scroll_direction;
+    uint8_t screen_array;
+    uint8_t last_screen_index;
+    uint8_t plugin_screen_index;
 
     uint8_t next_param;
-    uint8_t tokens_found;
     uint8_t valid;
     uint8_t decimals_token;
     uint8_t decimals_received;
     uint8_t selectorIndex;
 } uniswap_parameters_t;
+
+
+
+
 
 // Piece of code that will check that the above structure is not bigger than 5 * 32. Do not remove
 // this check.

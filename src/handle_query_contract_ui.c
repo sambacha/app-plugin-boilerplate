@@ -56,9 +56,7 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case ADD_LIQUIDITY:
             strncpy(msg->title, "Deposit", msg->titleLength);
             break;
-        // case UNISWAP_DUMMY_2:
-        //    strncpy(msg->title, "Receive", msg->titleLength);
-        //    break;
+            break;
         default:
             PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
             msg->result = ETH_PLUGIN_RESULT_ERROR;
@@ -81,9 +79,7 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case ADD_LIQUIDITY:
             strncpy(msg->title, "Deposit", msg->titleLength);
             break;
-        // case UNISWAP_DUMMY_2:
-        //    strncpy(msg->title, "Receive", msg->titleLength);
-        //    break;
+            break;
         default:
             PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
             msg->result = ETH_PLUGIN_RESULT_ERROR;
@@ -106,9 +102,6 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
         case ADD_LIQUIDITY_ETH:
             strncpy(msg->title, "Deposit", msg->titleLength);
             break;
-        // case UNISWAP_DUMMY_2:
-        //    strncpy(msg->title, "Receive", msg->titleLength);
-        //    break;
         default:
             PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
             msg->result = ETH_PLUGIN_RESULT_ERROR;
@@ -124,7 +117,7 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
 }
 
 // Set UI for "Beneficiary" screen.
-static void set_beneficiary_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+static void set_address_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     strncpy(msg->title, "Beneficiary", msg->titleLength);
 
     msg->msg[0] = '0';
@@ -145,7 +138,7 @@ static void set_token_warning_ui(ethQueryContractUI_t *msg,
     strncpy(msg->msg, "Unknown token", msg->msgLength);
 }
 
-static void set_pool_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
         case (ADD_LIQUIDITY_ETH):
             strncpy(msg->title, "Liquidity pool:", msg->titleLength);
@@ -165,71 +158,78 @@ static void set_beneficiary_warning_ui(ethQueryContractUI_t *msg,
         strncpy(msg->msg, "Not user's address", msg->titleLength);
 }
 
+static void get_scroll_direction(void *parameters) {
+    ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
+    uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
+
+    context->scroll_direction = RIGHT_SCROLL;
+    PRINTF("GPIRIOU screen:%d\n", msg->screenIndex);
+    PRINTF("GPIRIOU prev screen:%d\n", context->last_screen_index);
+    if (msg->screenIndex > context->last_screen_index || msg->screenIndex == 0)
+        context->scroll_direction = RIGHT_SCROLL;
+    else {
+        context->scroll_direction = LEFT_SCROLL;
+    }
+    context->last_screen_index = msg->screenIndex;
+}
+
+static void get_screen_array(void *parameters) {
+    ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
+    uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
+        
+        //print_bytes(&context->screen_array, 1);
+        if (context->scroll_direction == RIGHT_SCROLL) {
+            while (!(context->screen_array & context->plugin_screen_index << 1)
+                    && !(context->plugin_screen_index & ADDRESS_UI)) {
+                //PRINTF("GPIRIOU RIGHT\n");
+                print_bytes(&context->plugin_screen_index, 1);
+                context->plugin_screen_index <<= 1;
+            }
+            context->plugin_screen_index <<= 1;
+        }
+        else {
+            while (!(context->screen_array & context->plugin_screen_index >> 1)) {
+                PRINTF("GPIRIOU LEFT\n");
+                print_bytes(&context->plugin_screen_index, 1);
+                context->plugin_screen_index >>= 1;
+            }
+            context->plugin_screen_index >>= 1;
+        }
+        print_bytes(&context->plugin_screen_index, 1);
+}
+
 void handle_query_contract_ui(void *parameters) {
     ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
     memset(msg->title, 0, msg->titleLength);
     memset(msg->msg, 0, msg->msgLength);
     msg->result = ETH_PLUGIN_RESULT_OK;
-
-    switch(context->selectorIndex) {
-        case (ADD_LIQUIDITY_ETH):
-            switch (msg->screenIndex) {
-                case 0:
-                    if (context->tokens_found & TOKEN_FOUND)
-                        set_pool_ui(msg, context);
-                    else
-                        set_token_warning_ui(msg, context);
-                    break;
-                case 1:
-                    set_amount_token_a_ui(msg, context);
-                    break;
-                case 2:
-                    set_amount_eth_ui(msg, context);
-                    break;
-                case 3:
-                    if (context->should_warn)
-                        set_beneficiary_warning_ui(msg, context);
-                    else
-                        set_beneficiary_ui(msg, context);
-                    break;
-                case 4:
-                    set_beneficiary_ui(msg, context);
-                    break;
-                default:
-                    PRINTF("Received an invalid screenIndex\n");
-                    msg->result = ETH_PLUGIN_RESULT_ERROR;
-                    break;
-            }
+    get_scroll_direction(parameters);
+//    PRINTF("GPIRIOU\n");
+ //   print_bytes(&context->plugin_screen_index, 1);
+    switch (context->plugin_screen_index) {
+        case TX_TYPE_UI:
+            set_tx_type_ui(msg, context);
             break;
-        case (ADD_LIQUIDITY):
-            switch (msg->screenIndex) {
-                case 0:
-                    if (context->tokens_found & TOKEN_FOUND)
-                        set_pool_ui(msg, context);
-                    else
-                        set_token_warning_ui(msg, context);
-                    break;
-                case 1:
-                    set_amount_token_a_ui(msg, context);
-                    break;
-                case 2:
-                    set_amount_token_b_ui(msg, context);
-                    break;
-                case 3:
-                    if (context->should_warn)
-                        set_beneficiary_warning_ui(msg, context);
-                    else
-                        set_beneficiary_ui(msg, context);
-                    break;
-                case 4:
-                    set_beneficiary_ui(msg, context);
-                    break;
-                default:
-                    PRINTF("Received an invalid screenIndex\n");
-                    msg->result = ETH_PLUGIN_RESULT_ERROR;
-                    break;
-            }
+        case WARNING_TOKEN_A_UI:
+            PRINTF("GPIRIOU PROUT\n");
+            set_token_warning_ui(msg, context);
+            break;
+        case AMOUNT_TOKEN_A_UI:
+            set_amount_token_a_ui(msg, context);
+            break;
+        case WARNING_TOKEN_B_UI:
+            set_token_warning_ui(msg, context);
+            break;
+        case AMOUNT_TOKEN_B_UI:
+            set_amount_token_b_ui(msg, context);
+            break;
+        case WARNING_ADDRESS_UI:
+            set_beneficiary_warning_ui(msg, context);
+            break;
+        case ADDRESS_UI:
+            set_address_ui(msg, context);
             break;
     }
+    get_screen_array(parameters);
 }

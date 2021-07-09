@@ -5,6 +5,7 @@ static void handle_token_a(ethPluginProvideParameter_t *msg, uniswap_parameters_
     memcpy(context->token_a_address,
            &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
            sizeof(context->token_a_address));
+
     PRINTF("TOKEN_A_ADDRESS CONTRACT: %.*H\n", ADDRESS_LENGTH, context->token_a_address);
 }
 
@@ -43,6 +44,7 @@ static void handle_token_a_amount(ethPluginProvideParameter_t *msg, uniswap_para
                    "",  // No ticker
                    (char *) context->token_a_amount_sent,
                    sizeof(context->token_a_amount_sent));
+
     PRINTF("TOKEN_A_ADDRESS A AMOUNT SENT: %s\n", context->token_a_amount_sent);
 }
 
