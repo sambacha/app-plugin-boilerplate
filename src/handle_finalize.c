@@ -17,8 +17,10 @@ void handle_finalize(void *parameters) {
         switch (context->selectorIndex) {
             case ADD_LIQUIDITY_ETH:
             case ADD_LIQUIDITY:
+            case REMOVE_LIQUIDITY_ETH:
                 context->plugin_screen_index = TX_TYPE_UI;
                 msg->numScreens = 4;
+                break;
                 break;
                 break;
         }

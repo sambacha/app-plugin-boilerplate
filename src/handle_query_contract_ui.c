@@ -26,35 +26,36 @@ static void prepend_ticker(char *dest, uint8_t destsize, char *ticker) {
 }
 
 static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-    strncpy(msg->title, "0000 0001", msg->titleLength);
     switch (context->selectorIndex) {
         case (ADD_LIQUIDITY_ETH):
-            // strncpy(msg->title, "Liquidity pool:", msg->titleLength);
+        case (REMOVE_LIQUIDITY_ETH):
+            PRINTF("tokenA: %s\n", context->ticker_token_a);
+            strncpy(msg->title, "Liquidity pool:", msg->titleLength);
             snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
+            break;
             break;
         case (ADD_LIQUIDITY):
             PRINTF("tokenB: %s\n", context->ticker_token_b);
-            // strncpy(msg->title, "Liquidity pool:", msg->titleLength);
-            snprintf(msg->msg,
-                     msg->msgLength,
-                     "%s / %s",
-                     context->ticker_token_a,
-                     context->ticker_token_b);
+            strncpy(msg->title, "Liquidity pool:", msg->titleLength);
+            snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, context->ticker_token_b);
+            break;
     }
 }
 
 // Set UI for "Warning" screen.
 static void set_token_a_warning_ui(ethQueryContractUI_t *msg,
                                    uniswap_parameters_t *context __attribute__((unused))) {
-    strncpy(msg->title, "0000 0010", msg->titleLength);
-    strncpy(msg->msg, "Token A", msg->msgLength);
+    strncpy(msg->title, "WARNING", msg->titleLength);
+    strncpy(msg->msg, "Unknown token", msg->msgLength);
 }
 
 static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
         case ADD_LIQUIDITY:
-            strncpy(msg->title, "0000 0100", msg->titleLength);
+        case REMOVE_LIQUIDITY_ETH:
+            strncpy(msg->title, context->ticker_token_a, msg->titleLength);
+            break;
             break;
             break;
         default:
@@ -73,8 +74,8 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
 
 static void set_token_b_warning_ui(ethQueryContractUI_t *msg,
                                    uniswap_parameters_t *context __attribute__((unused))) {
-    strncpy(msg->title, "0000 1000", msg->titleLength);
-    strncpy(msg->msg, "Token B", msg->msgLength);
+    strncpy(msg->title, "WARNING", msg->titleLength);
+    strncpy(msg->msg, "Unknown token", msg->msgLength);
 }
 
 static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {

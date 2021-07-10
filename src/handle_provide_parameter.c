@@ -1,6 +1,6 @@
 #include "uniswap_plugin.h"
 
-static void handle_token_a(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
+static void handle_token_a_address(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     memset(context->token_a_address, 0, sizeof(context->token_a_address));
     memcpy(context->token_a_address,
            &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
@@ -9,7 +9,7 @@ static void handle_token_a(ethPluginProvideParameter_t *msg, uniswap_parameters_
     PRINTF("TOKEN_A_ADDRESS CONTRACT: %.*H\n", ADDRESS_LENGTH, context->token_a_address);
 }
 
-static void handle_token_b(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
+static void handle_token_b_address(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     memset(context->token_b_address, 0, sizeof(context->token_b_address));
     memcpy(context->token_b_address,
            &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
@@ -32,8 +32,6 @@ static void handle_eth_amount(ethPluginProvideParameter_t *msg, uniswap_paramete
     PRINTF("AMOUNT SENT: %s\n", context->token_b_amount_sent);
 }
 
-// Store the token amount deposited in the form of a string, without any ticker or
-// decimals. These will be added when displaying.
 static void handle_token_a_amount(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     memset(context->token_a_amount_sent, 0, sizeof(context->token_a_amount_sent));
 
@@ -69,22 +67,12 @@ static void handle_beneficiary(ethPluginProvideParameter_t *msg, uniswap_paramet
     PRINTF("BENEFICIARY: %.*H\n", ADDRESS_LENGTH, context->beneficiary);
 }
 
-// static void handle_token_a_amount(ethPluginProvideParameter_t *msg,
-//                                  uniswap_parameters_t *context) {
-//    memset(context->contract_address_received, 0, sizeof(context->contract_address_received));
-//    memcpy(context->contract_address_received,
-//           &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
-//           sizeof(context->contract_address_received));
-//    PRINTF("TOKEN_A_ADDRESS RECIEVED: %.*H\n", ADDRESS_LENGTH,
-//    context->contract_address_received);
-//}
-
 static void handle_add_liquidity_eth(ethPluginProvideParameter_t *msg,
                                      uniswap_parameters_t *context) {
     // Describe ABI
     switch (context->next_param) {
         case TOKEN_A_ADDRESS:  // deposited token address
-            handle_token_a(msg, context);
+            handle_token_a_address(msg, context);
             context->next_param = AMOUNT_TOKEN_A;
             break;
         case AMOUNT_TOKEN_A:  // token amount deposited
@@ -122,11 +110,11 @@ static void handle_add_liquidity(ethPluginProvideParameter_t *msg, uniswap_param
     // Describe ABI
     switch (context->next_param) {
         case TOKEN_A_ADDRESS:  // sent token address
-            handle_token_a(msg, context);
+            handle_token_a_address(msg, context);
             context->next_param = TOKEN_B_ADDRESS;
             break;
         case TOKEN_B_ADDRESS:  // sent token address
-            handle_token_b(msg, context);
+            handle_token_b_address(msg, context);
             context->next_param = AMOUNT_TOKEN_A;
             break;
         case AMOUNT_TOKEN_A:  // token amount sent
@@ -163,6 +151,40 @@ static void handle_add_liquidity(ethPluginProvideParameter_t *msg, uniswap_param
             break;
     }
 }
+
+static void handle_remove_liquidity_eth(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
+    switch (context->next_param) {
+        case TOKEN_A_ADDRESS:
+            handle_token_a_address(msg, context);
+            context->next_param = LIQUIDITY;
+            break;
+        case LIQUIDITY:
+            context->next_param = AMOUNT_TOKEN_A_MIN;
+            break;
+        case AMOUNT_TOKEN_A_MIN:
+            handle_token_a_amount(msg, context);
+            context->next_param = AMOUNT_ETH_MIN;
+            break;
+        case AMOUNT_ETH_MIN:
+            handle_eth_amount(msg, context);
+            context->next_param = BENEFICIARY;
+            break;
+        case BENEFICIARY:
+            handle_beneficiary(msg, context);
+            context->next_param = DEADLINE;
+            break;
+        case DEADLINE:
+            context->next_param = NONE;
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 void handle_provide_parameter(void *parameters) {
     ethPluginProvideParameter_t *msg = (ethPluginProvideParameter_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
@@ -179,6 +201,9 @@ void handle_provide_parameter(void *parameters) {
             break;
         case ADD_LIQUIDITY:
             handle_add_liquidity(msg, context);
+            break;
+        case REMOVE_LIQUIDITY_ETH:
+            handle_remove_liquidity_eth(msg, context);
             break;
         default:
             PRINTF("Selector Index %d not supported\n", context->selectorIndex);

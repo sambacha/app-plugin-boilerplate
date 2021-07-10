@@ -4,7 +4,7 @@
 #include "eth_plugin_interface.h"
 #include <string.h>
 
-// Size of parameters passed in by the Ethereum app. No need to modify it. TODO: mov eit to
+// Size of parameters passed in by the Ethereum app. No need to modify it. TODO: move it to
 // `eth_plugin_interals.h`.
 #define PARAMETER_LENGTH 32
 
@@ -17,7 +17,7 @@
 #define RUN_APPLICATION 1
 
 // Number of selectors defined in this plugin.
-#define NUM_UNISWAP_SELECTORS 2
+#define NUM_UNISWAP_SELECTORS 3
 
 // Name of the plugin.
 #define PLUGIN_NAME "Uniswap"
@@ -39,12 +39,14 @@
 typedef enum {
     ADD_LIQUIDITY_ETH,
     ADD_LIQUIDITY,
+    REMOVE_LIQUIDITY_ETH,
 } uniswapSelector_t;
 
 // Enumeration used to parse the smart-contract data.
 typedef enum {
     TOKEN_A_ADDRESS,
     TOKEN_B_ADDRESS,
+    LIQUIDITY,
     AMOUNT_TOKEN_A,
     AMOUNT_TOKEN_B,
     AMOUNT_TOKEN_A_MIN,
@@ -54,15 +56,6 @@ typedef enum {
     DEADLINE,
     NONE,
 } selectorField;
-
-// Enumeration of different screens that the plugin might display.
-// typedef enum {
-//    SEND_SCREEN,
-//    RECEIVE_SCREEN,
-//    BENEFICIARY_SCREEN,
-//    WARN_SCREEN,
-//    ERROR,  // This variant indicates that an error occured. No display should occur.
-//} screens_t;
 
 extern const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS];
 
