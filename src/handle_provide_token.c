@@ -10,7 +10,9 @@ void handle_provide_token(void *parameters) {
     context->screen_array |= ADDRESS_UI;
     if (msg->token1) {
         context->decimals_token = msg->token1->decimals;
-        strncpy(context->ticker_token_a, (char *) msg->token1->ticker, sizeof(context->ticker_token_a));
+        strncpy(context->ticker_token_a,
+                (char *) msg->token1->ticker,
+                sizeof(context->ticker_token_a));
     } else {
         context->decimals_token = DEFAULT_DECIMAL;
         strncpy(context->ticker_token_a, DEFAULT_TICKER, sizeof(context->ticker_token_a));
@@ -23,7 +25,9 @@ void handle_provide_token(void *parameters) {
     if (msg->token2 || context->selectorIndex == ADD_LIQUIDITY_ETH) {
         if (msg->token2) {
             context->decimals_token = msg->token2->decimals;
-            strncpy(context->ticker_token_b, (char *) msg->token2->ticker, sizeof(context->ticker_token_b));
+            strncpy(context->ticker_token_b,
+                    (char *) msg->token2->ticker,
+                    sizeof(context->ticker_token_b));
         }
     } else {
         context->decimals_token = DEFAULT_DECIMAL;
@@ -34,4 +38,5 @@ void handle_provide_token(void *parameters) {
     }
 
     msg->result = ETH_PLUGIN_RESULT_OK;
+    context->scroll_direction = RIGHT_SCROLL;
 }

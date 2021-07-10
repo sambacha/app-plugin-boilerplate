@@ -25,36 +25,36 @@ static void prepend_ticker(char *dest, uint8_t destsize, char *ticker) {
     memcpy(dest, ticker, ticker_len);
 }
 
-// Set UI for the "Send" screen.
-//static void set_send_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-//    switch (context->selectorIndex) {
-//        case ADD_LIQUIDITY_ETH:
-//            strncpy(msg->title, "Send", msg->titleLength);
-//            break;
-//        case ADD_LIQUIDITY:
-//            strncpy(msg->title, "", msg->titleLength);
-//            break;
-//        default:
-//            PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
-//            msg->result = ETH_PLUGIN_RESULT_ERROR;
-//            return;
-//    }
-//
-//    adjustDecimals(
-//        (char *) context->token_a_amount_sent,
-//        strnlen((char *) context->token_a_amount_sent, sizeof(context->token_a_amount_sent)),
-//        msg->msg,
-//        msg->msgLength,
-//        context->decimals_token);
-//
-//    prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_a);
-//}
+static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+    strncpy(msg->title, "0000 0001", msg->titleLength);
+    switch (context->selectorIndex) {
+        case (ADD_LIQUIDITY_ETH):
+            // strncpy(msg->title, "Liquidity pool:", msg->titleLength);
+            snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
+            break;
+        case (ADD_LIQUIDITY):
+            PRINTF("tokenB: %s\n", context->ticker_token_b);
+            // strncpy(msg->title, "Liquidity pool:", msg->titleLength);
+            snprintf(msg->msg,
+                     msg->msgLength,
+                     "%s / %s",
+                     context->ticker_token_a,
+                     context->ticker_token_b);
+    }
+}
+
+// Set UI for "Warning" screen.
+static void set_token_a_warning_ui(ethQueryContractUI_t *msg,
+                                   uniswap_parameters_t *context __attribute__((unused))) {
+    strncpy(msg->title, "0000 0010", msg->titleLength);
+    strncpy(msg->msg, "Token A", msg->msgLength);
+}
 
 static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
         case ADD_LIQUIDITY:
-            strncpy(msg->title, "Deposit", msg->titleLength);
+            strncpy(msg->title, "0000 0100", msg->titleLength);
             break;
             break;
         default:
@@ -62,22 +62,26 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;
     }
-
     adjustDecimals(
         (char *) context->token_a_amount_sent,
         strnlen((char *) context->token_a_amount_sent, sizeof(context->token_a_amount_sent)),
         msg->msg,
         msg->msgLength,
         context->decimals_token);
-
     prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_a);
+}
+
+static void set_token_b_warning_ui(ethQueryContractUI_t *msg,
+                                   uniswap_parameters_t *context __attribute__((unused))) {
+    strncpy(msg->title, "0000 1000", msg->titleLength);
+    strncpy(msg->msg, "Token B", msg->msgLength);
 }
 
 static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
         case ADD_LIQUIDITY:
-            strncpy(msg->title, "Deposit", msg->titleLength);
+            strncpy(msg->title, "0001 0000", msg->titleLength);
             break;
             break;
         default:
@@ -85,18 +89,16 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;
     }
-
     adjustDecimals(
         (char *) context->token_b_amount_sent,
         strnlen((char *) context->token_b_amount_sent, sizeof(context->token_b_amount_sent)),
         msg->msg,
         msg->msgLength,
         context->decimals_token);
-
     prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_b);
 }
 
-// Set UI for "Receive" screen.
+// Set UI for "Receive" screen. // TEJME ?
 static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
@@ -107,7 +109,6 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;
     }
-
     amountToString((uint8_t *) msg->pluginSharedRO->txContent->value.value,
                    msg->pluginSharedRO->txContent->value.length,  // value.length
                    WEI_TO_ETHER,
@@ -116,110 +117,107 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
                    msg->msgLength);
 }
 
-// Set UI for "Beneficiary" screen.
-static void set_address_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-    strncpy(msg->title, "Beneficiary", msg->titleLength);
+static void set_beneficiary_warning_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+    strncpy(msg->title, "0010 0000", msg->titleLength);
+    strncpy(msg->msg, "Not user's address", msg->titleLength);
+}
 
+// Set UI for "Beneficiary" screen.
+static void set_beneficiary_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+    strncpy(msg->title, "0100 0000", msg->titleLength);
     msg->msg[0] = '0';
     msg->msg[1] = 'x';
-
     chain_config_t chainConfig = {0};
-
     getEthAddressStringFromBinary((uint8_t *) context->beneficiary,
                                   (uint8_t *) msg->msg + 2,
                                   msg->pluginSharedRW->sha3,
                                   &chainConfig);
 }
 
-// Set UI for "Warning" screen.
-static void set_token_warning_ui(ethQueryContractUI_t *msg,
-                           uniswap_parameters_t *context __attribute__((unused))) {
-    strncpy(msg->title, "WARNING", msg->titleLength);
-    strncpy(msg->msg, "Unknown token", msg->msgLength);
+// Maybe useless
+static void set_last_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+    strncpy(msg->title, "1000 0000", msg->titleLength);
+    strncpy(msg->msg, "LAST", msg->titleLength);
 }
 
-static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-    switch (context->selectorIndex) {
-        case (ADD_LIQUIDITY_ETH):
-            strncpy(msg->title, "Liquidity pool:", msg->titleLength);
-            snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
-        break;
-        case (ADD_LIQUIDITY):
-            PRINTF("tokenB: %s\n", context->ticker_token_b);
-            strncpy(msg->title, "Liquidity pool:", msg->titleLength);
-            snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, context->ticker_token_b);
+static void skip_right(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+    while (!(context->screen_array & context->plugin_screen_index << 1) &&
+           !(context->plugin_screen_index & LAST_UI)) {
+        PRINTF("PENZO skip RIGHT\n");
+        context->plugin_screen_index <<= 1;
     }
 }
 
-static void set_beneficiary_warning_ui(ethQueryContractUI_t *msg,
-                                             uniswap_parameters_t *context) {
-
-        strncpy(msg->title, "WARNING", msg->titleLength);
-        strncpy(msg->msg, "Not user's address", msg->titleLength);
+static void skip_left(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+    while (!(context->screen_array & context->plugin_screen_index >> 1)) {
+        PRINTF("PENZO skip LEFT\n");
+        context->plugin_screen_index >>= 1;
+    }
 }
 
-static void get_scroll_direction(void *parameters) {
-    ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
-    uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
-
+static void get_scroll_direction(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     context->scroll_direction = RIGHT_SCROLL;
-    PRINTF("GPIRIOU screen:%d\n", msg->screenIndex);
-    PRINTF("GPIRIOU prev screen:%d\n", context->last_screen_index);
     if (msg->screenIndex > context->last_screen_index || msg->screenIndex == 0)
         context->scroll_direction = RIGHT_SCROLL;
     else {
         context->scroll_direction = LEFT_SCROLL;
     }
-    context->last_screen_index = msg->screenIndex;
 }
 
-static void get_screen_array(void *parameters) {
-    ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
-    uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
-        
-        //print_bytes(&context->screen_array, 1);
-        if (context->scroll_direction == RIGHT_SCROLL) {
-            while (!(context->screen_array & context->plugin_screen_index << 1)
-                    && !(context->plugin_screen_index & ADDRESS_UI)) {
-                //PRINTF("GPIRIOU RIGHT\n");
-                print_bytes(&context->plugin_screen_index, 1);
-                context->plugin_screen_index <<= 1;
-            }
-            context->plugin_screen_index <<= 1;
-        }
-        else {
-            while (!(context->screen_array & context->plugin_screen_index >> 1)) {
-                PRINTF("GPIRIOU LEFT\n");
-                print_bytes(&context->plugin_screen_index, 1);
-                context->plugin_screen_index >>= 1;
-            }
+// TODO: define get_next_screen() and get_previous_screen()
+static void get_screen_array(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+    if (msg->screenIndex == 0) {
+        context->plugin_screen_index = TX_TYPE_UI;
+        context->last_screen_index = 0;
+        return;
+    }
+    // This should only happen on last valid Screen
+    if (msg->screenIndex == context->last_screen_index) {
+        context->plugin_screen_index = LAST_UI;
+        // UNTESTED: this should enable an 8th screen.
+        if (context->screen_array & LAST_UI) return;
+    }
+    // save LAST SCREEN INDEX
+    context->last_screen_index = msg->screenIndex;
+    if (context->scroll_direction == RIGHT_SCROLL) {
+        skip_right(msg, context);
+        context->plugin_screen_index <<= 1;
+    } else {
+        skip_left(msg, context);
+        if ((context->screen_array & context->plugin_screen_index >> 1) &&
+            !(context->plugin_screen_index & TX_TYPE_UI))
             context->plugin_screen_index >>= 1;
-        }
-        print_bytes(&context->plugin_screen_index, 1);
+    }
 }
 
 void handle_query_contract_ui(void *parameters) {
     ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
+
+    PRINTF("PENZO handle_query_contract_ui init\n");
+    PRINTF("PENZO last_screen_index: %d\n", context->last_screen_index);
+    PRINTF("PENZO screenIndex: %d\n", msg->screenIndex);
+    get_scroll_direction(msg, context);
+    PRINTF("PENZO scroll_direction: %d\n", context->scroll_direction);
+    get_screen_array(msg, context);
+
+    print_bytes(&context->plugin_screen_index, 1);
+
     memset(msg->title, 0, msg->titleLength);
     memset(msg->msg, 0, msg->msgLength);
     msg->result = ETH_PLUGIN_RESULT_OK;
-    get_scroll_direction(parameters);
-//    PRINTF("GPIRIOU\n");
- //   print_bytes(&context->plugin_screen_index, 1);
     switch (context->plugin_screen_index) {
         case TX_TYPE_UI:
             set_tx_type_ui(msg, context);
             break;
         case WARNING_TOKEN_A_UI:
-            PRINTF("GPIRIOU PROUT\n");
-            set_token_warning_ui(msg, context);
+            set_token_a_warning_ui(msg, context);
             break;
         case AMOUNT_TOKEN_A_UI:
             set_amount_token_a_ui(msg, context);
             break;
         case WARNING_TOKEN_B_UI:
-            set_token_warning_ui(msg, context);
+            set_token_b_warning_ui(msg, context);
             break;
         case AMOUNT_TOKEN_B_UI:
             set_amount_token_b_ui(msg, context);
@@ -228,8 +226,10 @@ void handle_query_contract_ui(void *parameters) {
             set_beneficiary_warning_ui(msg, context);
             break;
         case ADDRESS_UI:
-            set_address_ui(msg, context);
+            set_beneficiary_ui(msg, context);
+            break;
+        case LAST_UI:
+            set_last_ui(msg, context);
             break;
     }
-    get_screen_array(parameters);
 }

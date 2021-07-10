@@ -75,7 +75,8 @@ static void handle_beneficiary(ethPluginProvideParameter_t *msg, uniswap_paramet
 //    memcpy(context->contract_address_received,
 //           &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
 //           sizeof(context->contract_address_received));
-//    PRINTF("TOKEN_A_ADDRESS RECIEVED: %.*H\n", ADDRESS_LENGTH, context->contract_address_received);
+//    PRINTF("TOKEN_A_ADDRESS RECIEVED: %.*H\n", ADDRESS_LENGTH,
+//    context->contract_address_received);
 //}
 
 static void handle_add_liquidity_eth(ethPluginProvideParameter_t *msg,
@@ -117,15 +118,14 @@ static void handle_add_liquidity_eth(ethPluginProvideParameter_t *msg,
     }
 }
 
-static void handle_add_liquidity(ethPluginProvideParameter_t *msg,
-                                     uniswap_parameters_t *context) {
+static void handle_add_liquidity(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     // Describe ABI
     switch (context->next_param) {
-        case TOKEN_A_ADDRESS: // sent token address
+        case TOKEN_A_ADDRESS:  // sent token address
             handle_token_a(msg, context);
             context->next_param = TOKEN_B_ADDRESS;
             break;
-        case TOKEN_B_ADDRESS: // sent token address
+        case TOKEN_B_ADDRESS:  // sent token address
             handle_token_b(msg, context);
             context->next_param = AMOUNT_TOKEN_A;
             break;
@@ -143,7 +143,7 @@ static void handle_add_liquidity(ethPluginProvideParameter_t *msg,
             PRINTF("a min\n");
             context->next_param = AMOUNT_TOKEN_B_MIN;
             break;
-        case AMOUNT_TOKEN_B_MIN: 
+        case AMOUNT_TOKEN_B_MIN:
             PRINTF("b min\n");
             context->next_param = BENEFICIARY;
             break;

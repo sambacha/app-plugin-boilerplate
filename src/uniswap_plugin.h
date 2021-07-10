@@ -23,16 +23,17 @@
 #define PLUGIN_NAME "Uniswap"
 
 // screeen array correspondance
-#define TX_TYPE_UI 1
+#define TX_TYPE_UI         1
 #define WARNING_TOKEN_A_UI (1 << 1)
-#define AMOUNT_TOKEN_A_UI (1 << 2)
+#define AMOUNT_TOKEN_A_UI  (1 << 2)
 #define WARNING_TOKEN_B_UI (1 << 3)
-#define AMOUNT_TOKEN_B_UI (1 << 4)
+#define AMOUNT_TOKEN_B_UI  (1 << 4)
 #define WARNING_ADDRESS_UI (1 << 5)
-#define ADDRESS_UI (1 << 6)
+#define ADDRESS_UI         (1 << 6)
+#define LAST_UI            (1 << 7)
 
 #define RIGHT_SCROLL 1
-#define LEFT_SCROLL 0
+#define LEFT_SCROLL  0
 // Enumeration of the different selectors possible.
 // Should follow the array declared in main.c
 typedef enum {
@@ -55,7 +56,7 @@ typedef enum {
 } selectorField;
 
 // Enumeration of different screens that the plugin might display.
-//typedef enum {
+// typedef enum {
 //    SEND_SCREEN,
 //    RECEIVE_SCREEN,
 //    BENEFICIARY_SCREEN,
@@ -91,10 +92,6 @@ typedef struct uniswap_parameters_t {
     uint8_t decimals_received;
     uint8_t selectorIndex;
 } uniswap_parameters_t;
-
-
-
-
 
 // Piece of code that will check that the above structure is not bigger than 5 * 32. Do not remove
 // this check.
