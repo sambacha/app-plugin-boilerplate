@@ -24,6 +24,7 @@ void handle_finalize(void *parameters) {
 
         if (memcmp(msg->address, context->beneficiary, ADDRESS_LENGTH)) {
             context->screen_array |= WARNING_ADDRESS_UI;
+            PRINTF("GPIRIOU WARNING SET\n");
             msg->numScreens++;
         }
 

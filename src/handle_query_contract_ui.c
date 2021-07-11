@@ -144,14 +144,14 @@ static void set_last_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context
 static void scroll_right(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     while (!(context->screen_array & context->plugin_screen_index << 1) &&
            !(context->plugin_screen_index & LAST_UI)) {
-        PRINTF("GPIRIOU skip RIGHT\n");
+      //  PRINTF("GPIRIOU scroll RIGHT\n");
         context->plugin_screen_index <<= 1;
     }
 }
 
 static void scroll_left(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     while (!(context->screen_array & context->plugin_screen_index >> 1)) {
-        PRINTF("GPIRIOU skip LEFT\n");
+        PRINTF("GPIRIOU scroll LEFT\n");
         context->plugin_screen_index >>= 1;
     }
 }
@@ -182,9 +182,11 @@ static void get_screen_array(ethQueryContractUI_t *msg, uniswap_parameters_t *co
     context->previous_screen_index = msg->screenIndex;
     if (context->scroll_direction == RIGHT_SCROLL) {
         scroll_right(msg, context);
+//        PRINTF("GPIRIOU  bit levé a gauche\n");
         context->plugin_screen_index <<= 1;
     } else {
         scroll_left(msg, context);
+        //PRINTF("GPIRIOU  bit levé a droite\n");
         if ((context->screen_array & context->plugin_screen_index >> 1) &&
             !(context->plugin_screen_index & TX_TYPE_UI))
             context->plugin_screen_index >>= 1;
@@ -195,11 +197,10 @@ void handle_query_contract_ui(void *parameters) {
     ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
 
-    //PRINTF("GPIRIOU handle_query_contract_ui init\n");
+    PRINTF("GPIRIOU handle_query_contract_ui\n");
     //PRINTF("GPIRIOU previous_screen_index: %d\n", context->previous_screen_index);
     //PRINTF("GPIRIOU screenIndex: %d\n", msg->screenIndex);
     get_scroll_direction(msg, context);
-    //PRINTF("GPIRIOU scroll_direction: %d\n", context->scroll_direction);
     get_screen_array(msg, context);
 
     print_bytes(&context->plugin_screen_index, 1);
@@ -224,7 +225,7 @@ void handle_query_contract_ui(void *parameters) {
             PRINTF("GPIRIOU WARNING B\n");
             set_token_warning_ui(msg, context);
             break;
-        case AMOUNT_TOKEN_B_UI:
+        case AMOUNT_TOKEN_B_UI: {
             switch (context->selectorIndex) {
                 case ADD_LIQUIDITY_ETH:
                 case REMOVE_LIQUIDITY_ETH:
@@ -232,14 +233,21 @@ void handle_query_contract_ui(void *parameters) {
                     set_amount_eth_ui(msg, context);
                     break;
                     break;
-                default:
+                case ADD_LIQUIDITY:
                     PRINTF("GPIRIOU AMOUNT B\n");
                     set_amount_token_b_ui(msg, context);
                     break;
+                default:
+                    break;
+                break;
+            } 
             break;
-            }
+        }
         case WARNING_ADDRESS_UI:
             PRINTF("GPIRIOU WARNING ADDRESS\n");
+            if (context->selectorIndex == WARNING_ADDRESS_UI)
+                PRINTF("GPIRIOU TRUE !!!\n");
+//            print_bytes(&context->plugin_screen_index, 1);
             set_beneficiary_warning_ui(msg, context);
             break;
         case ADDRESS_UI:

@@ -30,6 +30,7 @@ void handle_provide_token(void *parameters) {
                     sizeof(context->ticker_token_b));
         }
     } else {
+        PRINTF("GPIRIOU PROVIDE ELSE\n");
         context->decimals_token = DEFAULT_DECIMAL;
         strncpy(context->ticker_token_b, DEFAULT_TICKER, sizeof(context->ticker_token_b));
 
