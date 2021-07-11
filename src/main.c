@@ -35,7 +35,7 @@ static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH[SELECTOR_SIZE] = {0xe2, 0x75, 
 const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS] = {
     UNISWAP_ADD_LIQUIDITY_ETH,
     UNISWAP_ADD_LIQUIDITY,
-    UNISWAP_REMOVE_LIQUIDITY_ETH
+    UNISWAP_REMOVE_LIQUIDITY_ETH,
 };
 
 // Function to dispatch calls from the ethereum app.

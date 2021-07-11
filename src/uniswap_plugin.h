@@ -76,7 +76,7 @@ typedef struct uniswap_parameters_t {
     char beneficiary[ADDRESS_LENGTH];
     bool scroll_direction;
     uint8_t screen_array;
-    uint8_t last_screen_index;
+    uint8_t previous_screen_index;
     uint8_t plugin_screen_index;
 
     uint8_t next_param;

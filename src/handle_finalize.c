@@ -1,15 +1,12 @@
 #include "uniswap_plugin.h"
 
-static void screen_array(uniswap_parameters_t *context) {
-}
-
 void handle_finalize(void *parameters) {
     ethPluginFinalize_t *msg = (ethPluginFinalize_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
 
     // print_bytes(msg->address, ADDRESS_LENGTH);
 
-    // PENZO full random placement
+    // GPIRIOU full random placement
     context->screen_array |= TX_TYPE_UI;
 
     if (context->valid) {
