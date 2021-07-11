@@ -221,8 +221,17 @@ void handle_query_contract_ui(void *parameters) {
             set_token_b_warning_ui(msg, context);
             break;
         case AMOUNT_TOKEN_B_UI:
-            set_amount_token_b_ui(msg, context);
+            switch (context->selectorIndex) {
+                case ADD_LIQUIDITY_ETH:
+                case REMOVE_LIQUIDITY_ETH:
+                    set_amount_eth_ui(msg, context);
+                    break;
+                    break;
+                default:
+                    set_amount_token_b_ui(msg, context);
+                    break;
             break;
+            }
         case WARNING_ADDRESS_UI:
             set_beneficiary_warning_ui(msg, context);
             break;
