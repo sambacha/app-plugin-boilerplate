@@ -10,14 +10,14 @@
 
 // Size of the smart-contract method. No need to modify it. TODO: mov eit to
 // `eth_plugin_interals.h`.
-#define SELECTOR_SIZE 4
+#define SELECTOR_SIZE 3
 
 // Value to be passed in as parameter when calling the Ethereum app. TODO: mov eit to
 // `eth_plugin_interals.h`.
 #define RUN_APPLICATION 1
 
 // Number of selectors defined in this plugin.
-#define NUM_UNISWAP_SELECTORS 3
+#define NUM_UNISWAP_SELECTORS 4
 
 // Name of the plugin.
 #define PLUGIN_NAME "Uniswap"
@@ -39,7 +39,8 @@
 typedef enum {
     ADD_LIQUIDITY_ETH,
     ADD_LIQUIDITY,
-    REMOVE_LIQUIDITY_ETH,
+    REMOVE_LIQUIDITY_ETH_PERMIT,
+   // REMOVE_LIQUIDITY,
 } uniswapSelector_t;
 
 // Enumeration used to parse the smart-contract data.

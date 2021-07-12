@@ -152,7 +152,7 @@ static void handle_add_liquidity(ethPluginProvideParameter_t *msg, uniswap_param
     }
 }
 
-static void handle_remove_liquidity_eth(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
+static void handle_REMOVE_LIQUIDITY_ETH_PERMIT(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     switch (context->next_param) {
         case TOKEN_A_ADDRESS:
             handle_token_a_address(msg, context);
@@ -202,8 +202,8 @@ void handle_provide_parameter(void *parameters) {
         case ADD_LIQUIDITY:
             handle_add_liquidity(msg, context);
             break;
-        case REMOVE_LIQUIDITY_ETH:
-            handle_remove_liquidity_eth(msg, context);
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
+            handle_REMOVE_LIQUIDITY_ETH_PERMIT(msg, context);
             break;
         default:
             PRINTF("Selector Index %d not supported\n", context->selectorIndex);

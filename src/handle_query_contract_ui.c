@@ -28,7 +28,7 @@ static void prepend_ticker(char *dest, uint8_t destsize, char *ticker) {
 static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
         case (ADD_LIQUIDITY_ETH):
-        case (REMOVE_LIQUIDITY_ETH):
+        case (REMOVE_LIQUIDITY_ETH_PERMIT):
             PRINTF("tokenA: %s\n", context->ticker_token_a);
             strncpy(msg->title, "Liquidity pool:", msg->titleLength);
             snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
@@ -56,7 +56,7 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
             strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
             break;
-        case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
             strncpy(msg->title, "Remove:", msg->titleLength);
             break;
         default:
@@ -80,7 +80,7 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
             strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
             break;
-        case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
             strncpy(msg->title, "Remove:", msg->titleLength);
             break;
         default:
@@ -102,7 +102,7 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
         case ADD_LIQUIDITY_ETH:
             strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
-        case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
             strncpy(msg->title, "Remove:", msg->titleLength);
             break;
         default:
@@ -151,7 +151,7 @@ static void scroll_right(ethQueryContractUI_t *msg, uniswap_parameters_t *contex
 
 static void scroll_left(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     while (!(context->screen_array & context->plugin_screen_index >> 1)) {
-        PRINTF("GPIRIOU scroll LEFT\n");
+       // PRINTF("GPIRIOU scroll LEFT\n");
         context->plugin_screen_index >>= 1;
     }
 }
@@ -228,7 +228,7 @@ void handle_query_contract_ui(void *parameters) {
         case AMOUNT_TOKEN_B_UI: {
             switch (context->selectorIndex) {
                 case ADD_LIQUIDITY_ETH:
-                case REMOVE_LIQUIDITY_ETH:
+                case REMOVE_LIQUIDITY_ETH_PERMIT:
                     PRINTF("GPIRIOU AMOUNT ETH\n");
                     set_amount_eth_ui(msg, context);
                     break;
@@ -245,9 +245,6 @@ void handle_query_contract_ui(void *parameters) {
         }
         case WARNING_ADDRESS_UI:
             PRINTF("GPIRIOU WARNING ADDRESS\n");
-            if (context->selectorIndex == WARNING_ADDRESS_UI)
-                PRINTF("GPIRIOU TRUE !!!\n");
-//            print_bytes(&context->plugin_screen_index, 1);
             set_beneficiary_warning_ui(msg, context);
             break;
         case ADDRESS_UI:
