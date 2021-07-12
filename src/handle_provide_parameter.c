@@ -1,6 +1,7 @@
 #include "uniswap_plugin.h"
 
-static void handle_token_a_address(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
+static void handle_token_a_address(ethPluginProvideParameter_t *msg,
+                                   uniswap_parameters_t *context) {
     memset(context->token_a_address, 0, sizeof(context->token_a_address));
     memcpy(context->token_a_address,
            &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
@@ -9,7 +10,8 @@ static void handle_token_a_address(ethPluginProvideParameter_t *msg, uniswap_par
     PRINTF("TOKEN_A_ADDRESS CONTRACT: %.*H\n", ADDRESS_LENGTH, context->token_a_address);
 }
 
-static void handle_token_b_address(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
+static void handle_token_b_address(ethPluginProvideParameter_t *msg,
+                                   uniswap_parameters_t *context) {
     memset(context->token_b_address, 0, sizeof(context->token_b_address));
     memcpy(context->token_b_address,
            &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
@@ -152,7 +154,8 @@ static void handle_add_liquidity(ethPluginProvideParameter_t *msg, uniswap_param
     }
 }
 
-static void handle_REMOVE_LIQUIDITY_ETH_PERMIT(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
+static void handle_remove_liquidity_eth_permit(ethPluginProvideParameter_t *msg,
+                                               uniswap_parameters_t *context) {
     switch (context->next_param) {
         case TOKEN_A_ADDRESS:
             handle_token_a_address(msg, context);
@@ -203,7 +206,7 @@ void handle_provide_parameter(void *parameters) {
             handle_add_liquidity(msg, context);
             break;
         case REMOVE_LIQUIDITY_ETH_PERMIT:
-            handle_REMOVE_LIQUIDITY_ETH_PERMIT(msg, context);
+            handle_remove_liquidity_eth_permit(msg, context);
             break;
         default:
             PRINTF("Selector Index %d not supported\n", context->selectorIndex);

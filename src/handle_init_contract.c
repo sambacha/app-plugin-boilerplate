@@ -49,7 +49,7 @@ void handle_init_contract(void *parameters) {
         case REMOVE_LIQUIDITY_ETH_PERMIT:
             context->next_param = TOKEN_A_ADDRESS;
             break;
-            break;
+            // break;
         default:
             PRINTF("Missing selectorIndex\n");
             msg->result = ETH_PLUGIN_RESULT_ERROR;

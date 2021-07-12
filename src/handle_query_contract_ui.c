@@ -37,14 +37,18 @@ static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *cont
         case (ADD_LIQUIDITY):
             PRINTF("tokenB: %s\n", context->ticker_token_b);
             strncpy(msg->title, "Liquidity pool:", msg->titleLength);
-            snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, context->ticker_token_b);
+            snprintf(msg->msg,
+                     msg->msgLength,
+                     "%s / %s",
+                     context->ticker_token_a,
+                     context->ticker_token_b);
             break;
     }
 }
 
 // Set UI for "Warning" screen.
 static void set_token_warning_ui(ethQueryContractUI_t *msg,
-                                   uniswap_parameters_t *context __attribute__((unused))) {
+                                 uniswap_parameters_t *context __attribute__((unused))) {
     strncpy(msg->title, "WARNING", msg->titleLength);
     strncpy(msg->msg, "Unknown token", msg->msgLength);
 }
@@ -190,9 +194,6 @@ void handle_query_contract_ui(void *parameters) {
     ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
 
-    PRINTF("GPIRIOU handle_query_contract_ui\n");
-    //PRINTF("GPIRIOU previous_screen_index: %d\n", context->previous_screen_index);
-    //PRINTF("GPIRIOU screenIndex: %d\n", msg->screenIndex);
     get_scroll_direction(msg, context);
     get_screen_array(msg, context);
 
@@ -225,15 +226,13 @@ void handle_query_contract_ui(void *parameters) {
                     PRINTF("GPIRIOU AMOUNT ETH\n");
                     set_amount_eth_ui(msg, context);
                     break;
-                    break;
                 case ADD_LIQUIDITY:
                     PRINTF("GPIRIOU AMOUNT B\n");
                     set_amount_token_b_ui(msg, context);
                     break;
                 default:
                     break;
-                break;
-            } 
+            }
             break;
         }
         case WARNING_ADDRESS_UI:

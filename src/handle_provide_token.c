@@ -39,5 +39,4 @@ void handle_provide_token(void *parameters) {
     }
 
     msg->result = ETH_PLUGIN_RESULT_OK;
-    context->scroll_direction = RIGHT_SCROLL;
 }

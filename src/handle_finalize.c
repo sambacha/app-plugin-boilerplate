@@ -18,8 +18,6 @@ void handle_finalize(void *parameters) {
                 context->plugin_screen_index = TX_TYPE_UI;
                 msg->numScreens = 4;
                 break;
-                break;
-                break;
         }
 
         if (memcmp(msg->address, context->beneficiary, ADDRESS_LENGTH)) {
