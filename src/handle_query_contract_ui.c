@@ -47,10 +47,16 @@ static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *cont
 }
 
 // Set UI for "Warning" screen.
-static void set_token_warning_ui(ethQueryContractUI_t *msg,
-                                 uniswap_parameters_t *context __attribute__((unused))) {
-    strncpy(msg->title, "WARNING", msg->titleLength);
-    strncpy(msg->msg, "Unknown token", msg->msgLength);
+static void set_token_a_warning_ui(ethQueryContractUI_t *msg,
+                                   uniswap_parameters_t *context __attribute__((unused))) {
+    strncpy(msg->title, "0000 0010", msg->titleLength);
+    strncpy(msg->msg, "! token A", msg->msgLength);
+}
+
+static void set_token_b_warning_ui(ethQueryContractUI_t *msg,
+                                   uniswap_parameters_t *context __attribute__((unused))) {
+    strncpy(msg->title, "0000 1000", msg->titleLength);
+    strncpy(msg->msg, "! token B", msg->msgLength);
 }
 
 static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
@@ -123,7 +129,7 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
 }
 
 static void set_beneficiary_warning_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-    strncpy(msg->title, "WARNING", msg->titleLength);
+    strncpy(msg->title, "0010 0000", msg->titleLength);
     strncpy(msg->msg, "Not user's address", msg->titleLength);
 }
 
@@ -182,11 +188,10 @@ static void get_screen_array(ethQueryContractUI_t *msg, uniswap_parameters_t *co
     context->previous_screen_index = msg->screenIndex;
     if (context->scroll_direction == RIGHT_SCROLL) {
         skip_right(msg, context);
+        context->plugin_screen_index <<= 1;
     } else {
         skip_left(msg, context);
-        if ((context->screen_array & context->plugin_screen_index >> 1) &&
-            !(context->plugin_screen_index & TX_TYPE_UI))
-            context->plugin_screen_index >>= 1;
+        context->plugin_screen_index >>= 1;
     }
 }
 
@@ -209,7 +214,7 @@ void handle_query_contract_ui(void *parameters) {
             break;
         case WARNING_TOKEN_A_UI:
             PRINTF("GPIRIOU WARNING A\n");
-            set_token_warning_ui(msg, context);
+            set_token_a_warning_ui(msg, context);
             break;
         case AMOUNT_TOKEN_A_UI:
             PRINTF("GPIRIOU AMOUNT A\n");
@@ -217,7 +222,7 @@ void handle_query_contract_ui(void *parameters) {
             break;
         case WARNING_TOKEN_B_UI:
             PRINTF("GPIRIOU WARNING B\n");
-            set_token_warning_ui(msg, context);
+            set_token_b_warning_ui(msg, context);
             break;
         case AMOUNT_TOKEN_B_UI: {
             switch (context->selectorIndex) {
