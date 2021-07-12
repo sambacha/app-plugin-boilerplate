@@ -111,7 +111,7 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
             return;
     }
     amountToString((uint8_t *) msg->pluginSharedRO->txContent->value.value,
-                   msg->pluginSharedRO->txContent->value.length,  // value.length
+                   msg->pluginSharedRO->txContent->value.length,
                    WEI_TO_ETHER,
                    "ETH ",
                    msg->msg,
@@ -135,23 +135,21 @@ static void set_beneficiary_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *
                                   &chainConfig);
 }
 
-// Maybe useless 
+// Not used if last bit in screen array isn't 1
 static void set_last_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     strncpy(msg->title, "1000 0000", msg->titleLength);
     strncpy(msg->msg, "LAST", msg->titleLength);
 }
 
-static void scroll_right(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+static void skip_right(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     while (!(context->screen_array & context->plugin_screen_index << 1) &&
            !(context->plugin_screen_index & LAST_UI)) {
-      //  PRINTF("GPIRIOU scroll RIGHT\n");
         context->plugin_screen_index <<= 1;
     }
 }
 
-static void scroll_left(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+static void skip_left(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     while (!(context->screen_array & context->plugin_screen_index >> 1)) {
-       // PRINTF("GPIRIOU scroll LEFT\n");
         context->plugin_screen_index >>= 1;
     }
 }
@@ -165,7 +163,6 @@ static void get_scroll_direction(ethQueryContractUI_t *msg, uniswap_parameters_t
     }
 }
 
-// TODO: define get_next_screen() and get_previous_screen()
 static void get_screen_array(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     if (msg->screenIndex == 0) {
         context->plugin_screen_index = TX_TYPE_UI;
@@ -175,18 +172,14 @@ static void get_screen_array(ethQueryContractUI_t *msg, uniswap_parameters_t *co
     // This should only happen on last valid Screen
     if (msg->screenIndex == context->previous_screen_index) {
         context->plugin_screen_index = LAST_UI;
-        // UNTESTED: this should enable an 8th screen.
         if (context->screen_array & LAST_UI) return;
     }
     // save LAST SCREEN INDEX
     context->previous_screen_index = msg->screenIndex;
     if (context->scroll_direction == RIGHT_SCROLL) {
-        scroll_right(msg, context);
-//        PRINTF("GPIRIOU  bit levé a gauche\n");
-        context->plugin_screen_index <<= 1;
+        skip_right(msg, context);
     } else {
-        scroll_left(msg, context);
-        //PRINTF("GPIRIOU  bit levé a droite\n");
+        skip_left(msg, context);
         if ((context->screen_array & context->plugin_screen_index >> 1) &&
             !(context->plugin_screen_index & TX_TYPE_UI))
             context->plugin_screen_index >>= 1;
