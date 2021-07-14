@@ -10,14 +10,14 @@
 
 // Size of the smart-contract method. No need to modify it. TODO: mov eit to
 // `eth_plugin_interals.h`.
-#define SELECTOR_SIZE 3
+#define SELECTOR_SIZE 4
 
 // Value to be passed in as parameter when calling the Ethereum app. TODO: mov eit to
 // `eth_plugin_interals.h`.
 #define RUN_APPLICATION 1
 
 // Number of selectors defined in this plugin.
-#define NUM_UNISWAP_SELECTORS 4
+#define NUM_UNISWAP_SELECTORS 3
 
 // Name of the plugin.
 #define PLUGIN_NAME "Uniswap"
@@ -59,6 +59,10 @@ typedef enum {
 } selectorField;
 
 extern const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS];
+
+#define WETH_TICKER "WETH"
+#define WETH_DECIMALS 18
+
 
 // Number of decimals used when the token wasn't found in the Crypto Asset List.
 #define DEFAULT_DECIMAL WEI_TO_ETHER

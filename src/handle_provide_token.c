@@ -22,7 +22,9 @@ void handle_provide_token(void *parameters) {
         msg->additionalScreens++;
     }
 
+//    PRINTF("GPIRIOU token2:%s\n", msg->token2);
     if (msg->token2 || context->selectorIndex == ADD_LIQUIDITY_ETH) {
+        PRINTF("GPIRIOU TEEEEEEEEEEST\n");
         if (msg->token2) {
             context->decimals_token = msg->token2->decimals;
             strncpy(context->ticker_token_b,
@@ -30,12 +32,19 @@ void handle_provide_token(void *parameters) {
                     sizeof(context->ticker_token_b));
         }
     } else {
-        PRINTF("GPIRIOU PROVIDE ELSE\n");
-        context->decimals_token = DEFAULT_DECIMAL;
-        strncpy(context->ticker_token_b, DEFAULT_TICKER, sizeof(context->ticker_token_b));
+        switch (context->selectorIndex) {
+            case REMOVE_LIQUIDITY_ETH_PERMIT:
+                context->decimals_token = 18;
+                strncpy(context->ticker_token_b, "WETH ", 5);
+                break;
+            default:
+                PRINTF("GPIRIOU PROVIDE ELSE\n");
+                context->decimals_token = DEFAULT_DECIMAL;
+                strncpy(context->ticker_token_b, DEFAULT_TICKER, sizeof(context->ticker_token_b));
+                context->screen_array |= WARNING_TOKEN_B_UI;
+                msg->additionalScreens++;
+        }
 
-        context->screen_array |= WARNING_TOKEN_B_UI;
-        msg->additionalScreens++;
     }
 
     msg->result = ETH_PLUGIN_RESULT_OK;

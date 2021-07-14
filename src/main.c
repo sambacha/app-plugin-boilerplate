@@ -53,15 +53,15 @@ void dispatch_plugin_calls(int message, void *parameters) {
             handle_provide_parameter(parameters);
             break;
         case ETH_PLUGIN_FINALIZE:
-		PRINTF("FINALIZE\n");
+		PRINTF("GPIRIOU FINALIZE\n");
             handle_finalize(parameters);
             break;
         case ETH_PLUGIN_PROVIDE_TOKEN:
-		PRINTF("PROVIDE\n");
+		PRINTF("GPIRIOU PROVIDE\n");
             handle_provide_token(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_ID:
-		PRINTF("ID\n");
+		PRINTF("GPIROU ID\n");
             handle_query_contract_id(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_UI:

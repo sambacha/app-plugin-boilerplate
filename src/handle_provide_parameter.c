@@ -16,7 +16,7 @@ static void handle_token_b_address(ethPluginProvideParameter_t *msg,
     memcpy(context->token_b_address,
            &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
            sizeof(context->token_b_address));
-    PRINTF("TOKEN_B_ADDRESS CONTRACT: %.*H\n", ADDRESS_LENGTH, context->token_b_address);
+    PRINTF("GPIRIOU TOKEN_B_ADDRESS CONTRACT: %.*H\n", ADDRESS_LENGTH, context->token_b_address);
 }
 
 // Store the amount sent in the form of a string, without any ticker or
@@ -169,7 +169,7 @@ static void handle_remove_liquidity_eth_permit(ethPluginProvideParameter_t *msg,
             context->next_param = AMOUNT_ETH_MIN;
             break;
         case AMOUNT_ETH_MIN:
-            handle_eth_amount(msg, context);
+            handle_token_b_amount(msg, context);
             context->next_param = BENEFICIARY;
             break;
         case BENEFICIARY:
@@ -206,6 +206,7 @@ void handle_provide_parameter(void *parameters) {
             handle_add_liquidity(msg, context);
             break;
         case REMOVE_LIQUIDITY_ETH_PERMIT:
+            PRINTF("GPIRIOU REMOVE LIQUIDITY ETH\n");
             handle_remove_liquidity_eth_permit(msg, context);
             break;
         default:

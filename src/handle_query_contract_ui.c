@@ -28,13 +28,13 @@ static void prepend_ticker(char *dest, uint8_t destsize, char *ticker) {
 static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
         case (ADD_LIQUIDITY_ETH):
-        case (REMOVE_LIQUIDITY_ETH_PERMIT):
             PRINTF("tokenA: %s\n", context->ticker_token_a);
             strncpy(msg->title, "Liquidity pool:", msg->titleLength);
             snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
             break;
             break;
         case (ADD_LIQUIDITY):
+        case (REMOVE_LIQUIDITY_ETH_PERMIT):
             PRINTF("tokenB: %s\n", context->ticker_token_b);
             strncpy(msg->title, "Liquidity pool:", msg->titleLength);
             snprintf(msg->msg,
@@ -152,8 +152,7 @@ static void set_last_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context
 }
 
 static void skip_right(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-    while (!(context->screen_array & context->plugin_screen_index << 1) &&
-           !(context->plugin_screen_index & LAST_UI)) {
+    while (!(context->screen_array & context->plugin_screen_index << 1)) {
         context->plugin_screen_index <<= 1;
     }
 }
@@ -227,11 +226,11 @@ void handle_query_contract_ui(void *parameters) {
         case AMOUNT_TOKEN_B_UI: {
             switch (context->selectorIndex) {
                 case ADD_LIQUIDITY_ETH:
-                case REMOVE_LIQUIDITY_ETH_PERMIT:
                     PRINTF("GPIRIOU AMOUNT ETH\n");
                     set_amount_eth_ui(msg, context);
                     break;
                 case ADD_LIQUIDITY:
+                case REMOVE_LIQUIDITY_ETH_PERMIT:
                     PRINTF("GPIRIOU AMOUNT B\n");
                     set_amount_token_b_ui(msg, context);
                     break;
