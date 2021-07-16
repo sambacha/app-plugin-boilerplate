@@ -1,30 +1,29 @@
 #include "uniswap_plugin.h"
 
+static void check_beneficiary_warning(ethPluginFinalize_t *msg, uniswap_parameters_t *context) {
+    if (memcmp(msg->address, context->beneficiary, ADDRESS_LENGTH)) {
+        PRINTF("GPIRIOU WARNING SET\n");
+        context->screen_array |= WARNING_ADDRESS_UI;
+        msg->numScreens++;
+    }
+}
+
 void handle_finalize(void *parameters) {
     ethPluginFinalize_t *msg = (ethPluginFinalize_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
 
-    // print_bytes(msg->address, ADDRESS_LENGTH);
-
-    // GPIRIOU full random placement
+    // set generic screen_array
     context->screen_array |= TX_TYPE_UI;
+    context->screen_array |= AMOUNT_TOKEN_A_UI;
+    context->screen_array |= AMOUNT_TOKEN_B_UI;
+    context->screen_array |= ADDRESS_UI;
 
     if (context->valid) {
         msg->uiType = ETH_UI_TYPE_GENERIC;
-        switch (context->selectorIndex) {
-            case ADD_LIQUIDITY_ETH:
-            case ADD_LIQUIDITY:
-            case REMOVE_LIQUIDITY_ETH_PERMIT:
-                context->plugin_screen_index = TX_TYPE_UI;
-                msg->numScreens = 4;
-                break;
-        }
+        context->plugin_screen_index = TX_TYPE_UI;
+        msg->numScreens = 4;
 
-        if (memcmp(msg->address, context->beneficiary, ADDRESS_LENGTH)) {
-            context->screen_array |= WARNING_ADDRESS_UI;
-            PRINTF("GPIRIOU WARNING SET\n");
-            msg->numScreens++;
-        }
+        check_beneficiary_warning(msg, context);
 
         msg->tokenLookup1 = context->token_a_address;  // TODO: CHECK THIS
         msg->tokenLookup2 = context->token_b_address;  // TODO: CHECK THIS

@@ -16,11 +16,25 @@
 // `eth_plugin_interals.h`.
 #define RUN_APPLICATION 1
 
+// Name of the plugin.
+#define PLUGIN_NAME "Uniswap"
+
 // Number of selectors defined in this plugin.
 #define NUM_UNISWAP_SELECTORS 3
 
-// Name of the plugin.
-#define PLUGIN_NAME "Uniswap"
+// Enumeration of the different selectors possible.
+// Should follow the array declared in main.c
+typedef enum {
+    ADD_LIQUIDITY_ETH,
+    ADD_LIQUIDITY,
+    REMOVE_LIQUIDITY_ETH_PERMIT,
+    // REMOVE_LIQUIDITY_ETH_WITH_PERMIT_SUPPORTING_FEE_ON_TRANSFER_TOKENS,
+    // REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS,
+    // REMOVE_LIQUIDITY_ETH,
+    // REMOVE_LIQUIDITY,
+} uniswapSelector_t;
+
+extern const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS];
 
 // screeen array correspondance
 #define TX_TYPE_UI         1
@@ -34,14 +48,6 @@
 
 #define RIGHT_SCROLL 1
 #define LEFT_SCROLL  0
-// Enumeration of the different selectors possible.
-// Should follow the array declared in main.c
-typedef enum {
-    ADD_LIQUIDITY_ETH,
-    ADD_LIQUIDITY,
-    REMOVE_LIQUIDITY_ETH_PERMIT,
-   // REMOVE_LIQUIDITY,
-} uniswapSelector_t;
 
 // Enumeration used to parse the smart-contract data.
 typedef enum {
@@ -58,11 +64,8 @@ typedef enum {
     NONE,
 } selectorField;
 
-extern const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS];
-
-#define WETH_TICKER "WETH"
+#define WETH_TICKER   "WETH"
 #define WETH_DECIMALS 18
-
 
 // Number of decimals used when the token wasn't found in the Crypto Asset List.
 #define DEFAULT_DECIMAL WEI_TO_ETHER
@@ -79,15 +82,14 @@ typedef struct uniswap_parameters_t {
     char ticker_token_a[MAX_TICKER_LEN];
     char ticker_token_b[MAX_TICKER_LEN];
     char beneficiary[ADDRESS_LENGTH];
-    // bool scroll_direction;
     uint8_t screen_array;
     uint8_t previous_screen_index;
     uint8_t plugin_screen_index;
 
     uint8_t next_param;
     uint8_t valid;
-    uint8_t decimals_token;
-    uint8_t decimals_received;
+    uint8_t decimals_token_a;
+    uint8_t decimals_token_b;
     uint8_t selectorIndex;
 } uniswap_parameters_t;
 

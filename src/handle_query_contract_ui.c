@@ -79,7 +79,7 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         strnlen((char *) context->token_a_amount_sent, sizeof(context->token_a_amount_sent)),
         msg->msg,
         msg->msgLength,
-        context->decimals_token);
+        context->decimals_token_a);
     prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_a);
 }
 
@@ -103,7 +103,7 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         strnlen((char *) context->token_b_amount_sent, sizeof(context->token_b_amount_sent)),
         msg->msg,
         msg->msgLength,
-        context->decimals_token);
+        context->decimals_token_b);
     prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_b);
 }
 
@@ -199,11 +199,8 @@ void handle_query_contract_ui(void *parameters) {
     ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
 
-    // get_scroll_direction(msg, context);
     get_screen_array(msg, context);
-
     print_bytes(&context->plugin_screen_index, 1);
-
     memset(msg->title, 0, msg->titleLength);
     memset(msg->msg, 0, msg->msgLength);
     msg->result = ETH_PLUGIN_RESULT_OK;
@@ -224,22 +221,15 @@ void handle_query_contract_ui(void *parameters) {
             PRINTF("GPIRIOU WARNING B\n");
             set_token_b_warning_ui(msg, context);
             break;
-        case AMOUNT_TOKEN_B_UI: {
-            switch (context->selectorIndex) {
-                case ADD_LIQUIDITY_ETH:
-                    PRINTF("GPIRIOU AMOUNT ETH\n");
-                    set_amount_eth_ui(msg, context);
-                    break;
-                case ADD_LIQUIDITY:
-                case REMOVE_LIQUIDITY_ETH_PERMIT:
-                    PRINTF("GPIRIOU AMOUNT B\n");
-                    set_amount_token_b_ui(msg, context);
-                    break;
-                default:
-                    break;
+        case AMOUNT_TOKEN_B_UI:
+            if (context->selectorIndex == ADD_LIQUIDITY_ETH) {
+                PRINTF("GPIRIOU AMOUNT ETH\n");
+                set_amount_eth_ui(msg, context);
+            } else {
+                PRINTF("GPIRIOU AMOUNT B\n");
+                set_amount_token_b_ui(msg, context);
             }
             break;
-        }
         case WARNING_ADDRESS_UI:
             PRINTF("GPIRIOU WARNING ADDRESS\n");
             set_beneficiary_warning_ui(msg, context);

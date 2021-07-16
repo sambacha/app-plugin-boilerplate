@@ -29,7 +29,14 @@ static const uint8_t UNISWAP_ADD_LIQUIDITY_ETH[SELECTOR_SIZE] = {0xf3, 0x05, 0xd
 static const uint8_t UNISWAP_ADD_LIQUIDITY[SELECTOR_SIZE] = {0xe8, 0xe3, 0x37, 0x00};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT[SELECTOR_SIZE] = {0xde, 0xd9, 0x38, 0x2a};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY[SELECTOR_SIZE] = {0xe2, 0x75, 0x1c, 0xec};
-//static const uint8_t UNISWAP_REMOVE_LIQUIDITY[SELECTOR_SIZE] = {0xe2, 0x75, 0x1c, 0xec};
+static const uint8_t
+    UNISWAP_REMOVE_LIQUIDITY_ETH_WITH_PERMIT_SUPPORTING_FEE_ON_TRANSFER_TOKENS[SELECTOR_SIZE] = {0,
+                                                                                                 0,
+                                                                                                 0,
+                                                                                                 0};
+static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS[SELECTOR_SIZE] =
+    {0, 0, 0, 0};
+static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH[SELECTOR_SIZE] = {0, 0, 0, 0};
 
 // Array of all the different uniswap selectors. Make sure this follows the same order as the
 // enum defined in `uniswap_plugin.h`
@@ -37,7 +44,10 @@ const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS] = {
     UNISWAP_ADD_LIQUIDITY_ETH,
     UNISWAP_ADD_LIQUIDITY,
     UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT,
-//    UNISWAP_REMOVE_LIQUIDITY,
+    // UNISWAP_REMOVE_LIQUIDITY_ETH_WITH_PERMIT_SUPPORTING_FEE_ON_TRANSFER_TOKENS,
+    // UNISWAP_REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS,
+    // UNISWAP_REMOVE_LIQUIDITY_ETH,
+    //    UNISWAP_REMOVE_LIQUIDITY,
 };
 
 // Function to dispatch calls from the ethereum app.
@@ -46,26 +56,26 @@ void dispatch_plugin_calls(int message, void *parameters) {
     switch (message) {
         case ETH_PLUGIN_INIT_CONTRACT:
             handle_init_contract(parameters);
-		PRINTF("PROUT INIT\n");
+            PRINTF("PROUT INIT\n");
             break;
         case ETH_PLUGIN_PROVIDE_PARAMETER:
-		PRINTF("PROVIDE\n");
+            PRINTF("PROVIDE\n");
             handle_provide_parameter(parameters);
             break;
         case ETH_PLUGIN_FINALIZE:
-		PRINTF("GPIRIOU FINALIZE\n");
+            PRINTF("GPIRIOU FINALIZE\n");
             handle_finalize(parameters);
             break;
         case ETH_PLUGIN_PROVIDE_TOKEN:
-		PRINTF("GPIRIOU PROVIDE\n");
+            PRINTF("GPIRIOU PROVIDE\n");
             handle_provide_token(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_ID:
-		PRINTF("GPIROU ID\n");
+            PRINTF("GPIROU ID\n");
             handle_query_contract_id(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_UI:
-		PRINTF("UI\n");
+            PRINTF("UI\n");
             handle_query_contract_ui(parameters);
             break;
         default:

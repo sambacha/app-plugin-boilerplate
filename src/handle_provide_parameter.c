@@ -21,18 +21,19 @@ static void handle_token_b_address(ethPluginProvideParameter_t *msg,
 
 // Store the amount sent in the form of a string, without any ticker or
 // decimals. These will be added when displaying.
-static void handle_eth_amount(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
-    memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
 
-    // Convert to string.
-    amountToString(msg->parameter,
-                   PARAMETER_LENGTH,
-                   0,
-                   "",
-                   (char *) context->token_b_amount_sent,
-                   sizeof(context->token_b_amount_sent));
-    PRINTF("AMOUNT SENT: %s\n", context->token_b_amount_sent);
-}
+// static void handle_eth_amount(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
+//     memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
+
+//     // Convert to string.
+//     amountToString(msg->parameter,
+//                    PARAMETER_LENGTH,
+//                    0,
+//                    "",
+//                    (char *) context->token_b_amount_sent,
+//                    sizeof(context->token_b_amount_sent));
+//     PRINTF("AMOUNT SENT: %s\n", context->token_b_amount_sent);
+// }
 
 static void handle_token_a_amount(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     memset(context->token_a_amount_sent, 0, sizeof(context->token_a_amount_sent));
@@ -58,7 +59,7 @@ static void handle_token_b_amount(ethPluginProvideParameter_t *msg, uniswap_para
                    "",  // No ticker
                    (char *) context->token_b_amount_sent,
                    sizeof(context->token_b_amount_sent));
-    PRINTF("TOKEN_A_ADDRESS B AMOUNT SENT: %s\n", context->token_b_amount_sent);
+    PRINTF("PENZO handle_token_b_amount() token_b_amount_sent: %s\n", context->token_b_amount_sent);
 }
 
 static void handle_beneficiary(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
@@ -86,8 +87,8 @@ static void handle_add_liquidity_eth(ethPluginProvideParameter_t *msg,
             PRINTF("token min\n");
             context->next_param = AMOUNT_ETH_MIN;
             break;
-        case AMOUNT_ETH_MIN:  // not used
-            handle_eth_amount(msg, context);
+        case AMOUNT_ETH_MIN:
+            // handle_eth_amount(msg, context); // this is useless as we don't use this variable
             PRINTF("eth min\n");
             context->next_param = BENEFICIARY;
             break;
@@ -110,6 +111,7 @@ static void handle_add_liquidity_eth(ethPluginProvideParameter_t *msg,
 
 static void handle_add_liquidity(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     // Describe ABI
+    PRINTF("PENZO handle_add_liquidity\n");
     switch (context->next_param) {
         case TOKEN_A_ADDRESS:  // sent token address
             handle_token_a_address(msg, context);
@@ -205,6 +207,9 @@ void handle_provide_parameter(void *parameters) {
         case ADD_LIQUIDITY:
             handle_add_liquidity(msg, context);
             break;
+        // case REMOVE_LIQUIDITY_ETH_WITH_PERMIT_SUPPORTING_FEE_ON_TRANSFER_TOKENS:
+        // case REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS:
+        // case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
             PRINTF("GPIRIOU REMOVE LIQUIDITY ETH\n");
             handle_remove_liquidity_eth_permit(msg, context);
