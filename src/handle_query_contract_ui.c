@@ -163,17 +163,7 @@ static void skip_left(ethQueryContractUI_t *msg, uniswap_parameters_t *context) 
     }
 }
 
-// static void get_scroll_direction(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-//     context->scroll_direction = RIGHT_SCROLL;
-//     if (msg->screenIndex > context->previous_screen_index || msg->screenIndex == 0)
-//         context->scroll_direction = RIGHT_SCROLL;
-//     else {
-//         context->scroll_direction = LEFT_SCROLL;
-//     }
-// }
-
 static bool get_scroll_direction(uint8_t screen_index, uint8_t previous_screen_index) {
-    // context->scroll_direction = RIGHT_SCROLL;
     if (screen_index > previous_screen_index || screen_index == 0)
         return RIGHT_SCROLL;
     else {
