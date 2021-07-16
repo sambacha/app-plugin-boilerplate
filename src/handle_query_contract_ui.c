@@ -163,12 +163,21 @@ static void skip_left(ethQueryContractUI_t *msg, uniswap_parameters_t *context) 
     }
 }
 
-static void get_scroll_direction(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
-    context->scroll_direction = RIGHT_SCROLL;
-    if (msg->screenIndex > context->previous_screen_index || msg->screenIndex == 0)
-        context->scroll_direction = RIGHT_SCROLL;
+// static void get_scroll_direction(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+//     context->scroll_direction = RIGHT_SCROLL;
+//     if (msg->screenIndex > context->previous_screen_index || msg->screenIndex == 0)
+//         context->scroll_direction = RIGHT_SCROLL;
+//     else {
+//         context->scroll_direction = LEFT_SCROLL;
+//     }
+// }
+
+static bool get_scroll_direction(uint8_t screen_index, uint8_t previous_screen_index) {
+    // context->scroll_direction = RIGHT_SCROLL;
+    if (screen_index > previous_screen_index || screen_index == 0)
+        return RIGHT_SCROLL;
     else {
-        context->scroll_direction = LEFT_SCROLL;
+        return LEFT_SCROLL;
     }
 }
 
@@ -183,9 +192,11 @@ static void get_screen_array(ethQueryContractUI_t *msg, uniswap_parameters_t *co
         context->plugin_screen_index = LAST_UI;
         if (context->screen_array & LAST_UI) return;
     }
-    // save LAST SCREEN INDEX
+    bool scroll_direction = get_scroll_direction(msg->screenIndex, context->previous_screen_index);
+    // Save previous_screen_index after all checks are done.
     context->previous_screen_index = msg->screenIndex;
-    if (context->scroll_direction == RIGHT_SCROLL) {
+    // Scroll to next screen
+    if (scroll_direction == RIGHT_SCROLL) {
         skip_right(msg, context);
         context->plugin_screen_index <<= 1;
     } else {
@@ -198,7 +209,7 @@ void handle_query_contract_ui(void *parameters) {
     ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
 
-    get_scroll_direction(msg, context);
+    // get_scroll_direction(msg, context);
     get_screen_array(msg, context);
 
     print_bytes(&context->plugin_screen_index, 1);
