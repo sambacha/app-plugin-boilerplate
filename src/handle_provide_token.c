@@ -13,7 +13,6 @@ void handle_provide_token(void *parameters) {
     } else {
         context->decimals_token_a = DEFAULT_DECIMAL;
         strncpy(context->ticker_token_a, DEFAULT_TICKER, sizeof(context->ticker_token_a));
-
         // We will need an additional screen to display a warning message.
         context->screen_array |= WARNING_TOKEN_A_UI;
         msg->additionalScreens++;
@@ -26,8 +25,10 @@ void handle_provide_token(void *parameters) {
     }
 
     // No need to check token2 for REMOVE_LIQUIDITY_ETH_PERMIT
-    if (context->selectorIndex == REMOVE_LIQUIDITY_ETH_PERMIT) {
-        context->decimals_token_b = 18;
+    if (context->selectorIndex == REMOVE_LIQUIDITY_ETH_PERMIT ||
+        context->selectorIndex == REMOVE_LIQUIDITY_ETH_FEE ||
+        context->selectorIndex == REMOVE_LIQUIDITY_ETH_PERMIT_FEE) {
+        context->decimals_token_b = WETH_DECIMALS;
         strncpy(context->ticker_token_b, "WETH ", 5);
         msg->result = ETH_PLUGIN_RESULT_OK;
         return;

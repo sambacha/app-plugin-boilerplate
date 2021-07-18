@@ -29,11 +29,11 @@ static const uint8_t UNISWAP_ADD_LIQUIDITY_ETH[SELECTOR_SIZE] = {0xf3, 0x05, 0xd
 static const uint8_t UNISWAP_ADD_LIQUIDITY[SELECTOR_SIZE] = {0xe8, 0xe3, 0x37, 0x00};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT[SELECTOR_SIZE] = {0xde, 0xd9, 0x38, 0x2a};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY[SELECTOR_SIZE] = {0xe2, 0x75, 0x1c, 0xec};
-static const uint8_t
-    UNISWAP_REMOVE_LIQUIDITY_ETH_WITH_PERMIT_SUPPORTING_FEE_ON_TRANSFER_TOKENS[SELECTOR_SIZE] = {0,
-                                                                                                 0,
-                                                                                                 0,
-                                                                                                 0};
+static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_FEE[SELECTOR_SIZE] = {0xaf, 0x29, 0x79, 0xeb};
+static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE[SELECTOR_SIZE] = {0x5b,
+                                                                               0x0d,
+                                                                               0x59,
+                                                                               0x84};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS[SELECTOR_SIZE] =
     {0, 0, 0, 0};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH[SELECTOR_SIZE] = {0, 0, 0, 0};
@@ -44,7 +44,8 @@ const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS] = {
     UNISWAP_ADD_LIQUIDITY_ETH,
     UNISWAP_ADD_LIQUIDITY,
     UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT,
-    // UNISWAP_REMOVE_LIQUIDITY_ETH_WITH_PERMIT_SUPPORTING_FEE_ON_TRANSFER_TOKENS,
+    UNISWAP_REMOVE_LIQUIDITY_ETH_FEE,
+    UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE,
     // UNISWAP_REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS,
     // UNISWAP_REMOVE_LIQUIDITY_ETH,
     //    UNISWAP_REMOVE_LIQUIDITY,

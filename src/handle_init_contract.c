@@ -47,6 +47,8 @@ void handle_init_contract(void *parameters) {
         case ADD_LIQUIDITY_ETH:
         case ADD_LIQUIDITY:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             context->next_param = TOKEN_A_ADDRESS;
             break;
         default:

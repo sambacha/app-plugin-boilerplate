@@ -32,9 +32,10 @@ static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *cont
             strncpy(msg->title, "Liquidity pool:", msg->titleLength);
             snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
             break;
-            break;
         case (ADD_LIQUIDITY):
         case (REMOVE_LIQUIDITY_ETH_PERMIT):
+        case (REMOVE_LIQUIDITY_ETH_FEE):
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             PRINTF("tokenB: %s\n", context->ticker_token_b);
             strncpy(msg->title, "Liquidity pool:", msg->titleLength);
             snprintf(msg->msg,
@@ -65,8 +66,9 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case ADD_LIQUIDITY:
             strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
-            break;
         case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             strncpy(msg->title, "Remove:", msg->titleLength);
             break;
         default:
@@ -89,8 +91,9 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case ADD_LIQUIDITY:
             strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
-            break;
         case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             strncpy(msg->title, "Remove:", msg->titleLength);
             break;
         default:
@@ -111,9 +114,6 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
             strncpy(msg->title, "Deposit:", msg->titleLength);
-            break;
-        case REMOVE_LIQUIDITY_ETH_PERMIT:
-            strncpy(msg->title, "Remove:", msg->titleLength);
             break;
         default:
             PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
@@ -166,9 +166,8 @@ static void skip_left(ethQueryContractUI_t *msg, uniswap_parameters_t *context) 
 static bool get_scroll_direction(uint8_t screen_index, uint8_t previous_screen_index) {
     if (screen_index > previous_screen_index || screen_index == 0)
         return RIGHT_SCROLL;
-    else {
+    else
         return LEFT_SCROLL;
-    }
 }
 
 static void get_screen_array(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {

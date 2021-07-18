@@ -160,25 +160,31 @@ static void handle_remove_liquidity_eth_permit(ethPluginProvideParameter_t *msg,
                                                uniswap_parameters_t *context) {
     switch (context->next_param) {
         case TOKEN_A_ADDRESS:
+            PRINTF("PENZO TOKEN_A_ADDRESS\n");
             handle_token_a_address(msg, context);
             context->next_param = LIQUIDITY;
             break;
         case LIQUIDITY:
+            PRINTF("PENZO LIQUIDITY\n");
             context->next_param = AMOUNT_TOKEN_A_MIN;
             break;
         case AMOUNT_TOKEN_A_MIN:
+            PRINTF("PENZO TOKEN_A_MIN\n");
             handle_token_a_amount(msg, context);
             context->next_param = AMOUNT_ETH_MIN;
             break;
         case AMOUNT_ETH_MIN:
+            PRINTF("PENZO ETH MIN\n");
             handle_token_b_amount(msg, context);
             context->next_param = BENEFICIARY;
             break;
         case BENEFICIARY:
+            PRINTF("PENZO BENEFICIARY\n");
             handle_beneficiary(msg, context);
             context->next_param = DEADLINE;
             break;
         case DEADLINE:
+            PRINTF("PENZO DEALINE\n");
             context->next_param = NONE;
             break;
         case NONE:
@@ -207,10 +213,11 @@ void handle_provide_parameter(void *parameters) {
         case ADD_LIQUIDITY:
             handle_add_liquidity(msg, context);
             break;
-        // case REMOVE_LIQUIDITY_ETH_WITH_PERMIT_SUPPORTING_FEE_ON_TRANSFER_TOKENS:
         // case REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS:
         // case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
             PRINTF("GPIRIOU REMOVE LIQUIDITY ETH\n");
             handle_remove_liquidity_eth_permit(msg, context);
             break;
