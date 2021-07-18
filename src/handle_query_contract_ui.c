@@ -33,6 +33,7 @@ static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *cont
             snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
             break;
         case ADD_LIQUIDITY:
+        case REMOVE_LIQUIDITY:
         case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
         case REMOVE_LIQUIDITY_ETH_FEE:
@@ -67,6 +68,7 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case ADD_LIQUIDITY:
             strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
+        case REMOVE_LIQUIDITY:
         case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
         case REMOVE_LIQUIDITY_ETH_FEE:
@@ -93,6 +95,7 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case ADD_LIQUIDITY:
             strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
+        case REMOVE_LIQUIDITY:
         case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
         case REMOVE_LIQUIDITY_ETH_FEE:

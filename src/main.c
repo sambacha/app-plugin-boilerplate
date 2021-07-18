@@ -27,9 +27,9 @@
 
 static const uint8_t UNISWAP_ADD_LIQUIDITY[SELECTOR_SIZE] = {0xe8, 0xe3, 0x37, 0x00};
 static const uint8_t UNISWAP_ADD_LIQUIDITY_ETH[SELECTOR_SIZE] = {0xf3, 0x05, 0xd7, 0x19};
+static const uint8_t UNISWAP_REMOVE_LIQUIDITY[SELECTOR_SIZE] = {0xba, 0xa2, 0xab, 0xde};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH[SELECTOR_SIZE] = {0x02, 0x75, 0x1c, 0xec};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT[SELECTOR_SIZE] = {0xde, 0xd9, 0x38, 0x2a};
-// static const uint8_t UNISWAP_REMOVE_LIQUIDITY[SELECTOR_SIZE] = {0xe2, 0x75, 0x1c, 0xec};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_FEE[SELECTOR_SIZE] = {0xaf, 0x29, 0x79, 0xeb};
 static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE[SELECTOR_SIZE] = {0x5b,
                                                                                0x0d,
@@ -41,11 +41,11 @@ static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE[SELECTOR_SIZE] = {0
 const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS] = {
     UNISWAP_ADD_LIQUIDITY,
     UNISWAP_ADD_LIQUIDITY_ETH,
+    UNISWAP_REMOVE_LIQUIDITY,
     UNISWAP_REMOVE_LIQUIDITY_ETH,
     UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT,
     UNISWAP_REMOVE_LIQUIDITY_ETH_FEE,
     UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE,
-    //    UNISWAP_REMOVE_LIQUIDITY,
 };
 
 // Function to dispatch calls from the ethereum app.

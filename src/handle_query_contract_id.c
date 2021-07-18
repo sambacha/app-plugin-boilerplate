@@ -13,6 +13,7 @@ void handle_query_contract_id(void *parameters) {
             strncpy(msg->version, "Add liquidity", msg->versionLength);
             break;
         // case REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS:
+        case REMOVE_LIQUIDITY:
         case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
         case REMOVE_LIQUIDITY_ETH_FEE:

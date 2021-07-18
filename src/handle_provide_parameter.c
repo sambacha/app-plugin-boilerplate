@@ -156,8 +156,53 @@ static void handle_add_liquidity(ethPluginProvideParameter_t *msg, uniswap_param
     }
 }
 
-static void handle_remove_liquidity_eth_permit(ethPluginProvideParameter_t *msg,
-                                               uniswap_parameters_t *context) {
+static void handle_remove_liquidity(ethPluginProvideParameter_t *msg,
+                                    uniswap_parameters_t *context) {
+    switch (context->next_param) {
+        case TOKEN_A_ADDRESS:
+            PRINTF("PENZO TOKEN_A_ADDRESS\n");
+            handle_token_a_address(msg, context);
+            context->next_param = TOKEN_B_ADDRESS;
+            break;
+        case TOKEN_B_ADDRESS:
+            PRINTF("PENZO TOKEN_A_ADDRESS\n");
+            handle_token_b_address(msg, context);
+            context->next_param = LIQUIDITY;
+            break;
+        case LIQUIDITY:
+            PRINTF("PENZO LIQUIDITY\n");
+            context->next_param = AMOUNT_TOKEN_A_MIN;
+            break;
+        case AMOUNT_TOKEN_A_MIN:
+            PRINTF("PENZO TOKEN_A_MIN\n");
+            handle_token_a_amount(msg, context);
+            context->next_param = AMOUNT_TOKEN_B_MIN;
+            break;
+        case AMOUNT_TOKEN_B_MIN:
+            PRINTF("PENZO ETH MIN\n");
+            handle_token_b_amount(msg, context);
+            context->next_param = BENEFICIARY;
+            break;
+        case BENEFICIARY:
+            PRINTF("PENZO BENEFICIARY\n");
+            handle_beneficiary(msg, context);
+            context->next_param = DEADLINE;
+            break;
+        case DEADLINE:
+            PRINTF("PENZO DEALINE\n");
+            context->next_param = NONE;
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_remove_liquidity_eth(ethPluginProvideParameter_t *msg,
+                                        uniswap_parameters_t *context) {
     switch (context->next_param) {
         case TOKEN_A_ADDRESS:
             PRINTF("PENZO TOKEN_A_ADDRESS\n");
@@ -215,13 +260,15 @@ void handle_provide_parameter(void *parameters) {
             PRINTF("GPIRIOU LIQUIDITY\n");
             handle_add_liquidity(msg, context);
             break;
-        // case REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS:
         case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
         case REMOVE_LIQUIDITY_ETH_FEE:
             PRINTF("GPIRIOU REMOVE LIQUIDITY ETH\n");
-            handle_remove_liquidity_eth_permit(msg, context);
+            handle_remove_liquidity_eth(msg, context);
+            break;
+        case REMOVE_LIQUIDITY:
+            handle_remove_liquidity(msg, context);
             break;
         default:
             PRINTF("Selector Index %d not supported\n", context->selectorIndex);
