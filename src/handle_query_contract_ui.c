@@ -27,14 +27,15 @@ static void prepend_ticker(char *dest, uint8_t destsize, char *ticker) {
 
 static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
     switch (context->selectorIndex) {
-        case (ADD_LIQUIDITY_ETH):
+        case ADD_LIQUIDITY_ETH:
             PRINTF("tokenA: %s\n", context->ticker_token_a);
             strncpy(msg->title, "Liquidity pool:", msg->titleLength);
             snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
             break;
-        case (ADD_LIQUIDITY):
-        case (REMOVE_LIQUIDITY_ETH_PERMIT):
-        case (REMOVE_LIQUIDITY_ETH_FEE):
+        case ADD_LIQUIDITY:
+        case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             PRINTF("tokenB: %s\n", context->ticker_token_b);
             strncpy(msg->title, "Liquidity pool:", msg->titleLength);
@@ -66,6 +67,7 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case ADD_LIQUIDITY:
             strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
+        case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
         case REMOVE_LIQUIDITY_ETH_FEE:
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
@@ -91,6 +93,7 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case ADD_LIQUIDITY:
             strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
+        case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
         case REMOVE_LIQUIDITY_ETH_FEE:
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
@@ -128,7 +131,8 @@ static void set_amount_eth_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *c
                    msg->msgLength);
 }
 
-static void set_beneficiary_warning_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+static void set_beneficiary_warning_ui(ethQueryContractUI_t *msg,
+                                       uniswap_parameters_t *context __attribute__((unused))) {
     strncpy(msg->title, "0010 0000", msg->titleLength);
     strncpy(msg->msg, "Not user's address", msg->titleLength);
 }
@@ -146,18 +150,21 @@ static void set_beneficiary_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *
 }
 
 // Not used if last bit in screen array isn't 1
-static void set_last_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+static void set_last_ui(ethQueryContractUI_t *msg,
+                        uniswap_parameters_t *context __attribute__((unused))) {
     strncpy(msg->title, "1000 0000", msg->titleLength);
     strncpy(msg->msg, "LAST", msg->titleLength);
 }
 
-static void skip_right(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+static void skip_right(ethQueryContractUI_t *msg __attribute__((unused)),
+                       uniswap_parameters_t *context) {
     while (!(context->screen_array & context->plugin_screen_index << 1)) {
         context->plugin_screen_index <<= 1;
     }
 }
 
-static void skip_left(ethQueryContractUI_t *msg, uniswap_parameters_t *context) {
+static void skip_left(ethQueryContractUI_t *msg __attribute__((unused)),
+                      uniswap_parameters_t *context) {
     while (!(context->screen_array & context->plugin_screen_index >> 1)) {
         context->plugin_screen_index >>= 1;
     }

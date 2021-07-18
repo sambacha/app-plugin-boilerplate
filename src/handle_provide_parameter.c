@@ -208,13 +208,15 @@ void handle_provide_parameter(void *parameters) {
 
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
+            PRINTF("GPIRIOU ADD LIQUIDITY ETH\n");
             handle_add_liquidity_eth(msg, context);
             break;
         case ADD_LIQUIDITY:
+            PRINTF("GPIRIOU LIQUIDITY\n");
             handle_add_liquidity(msg, context);
             break;
         // case REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS:
-        // case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
         case REMOVE_LIQUIDITY_ETH_FEE:

@@ -25,7 +25,8 @@ void handle_provide_token(void *parameters) {
     }
 
     // No need to check token2 for REMOVE_LIQUIDITY_ETH_PERMIT
-    if (context->selectorIndex == REMOVE_LIQUIDITY_ETH_PERMIT ||
+    if (context->selectorIndex == REMOVE_LIQUIDITY_ETH ||
+        context->selectorIndex == REMOVE_LIQUIDITY_ETH_PERMIT ||
         context->selectorIndex == REMOVE_LIQUIDITY_ETH_FEE ||
         context->selectorIndex == REMOVE_LIQUIDITY_ETH_PERMIT_FEE) {
         context->decimals_token_b = WETH_DECIMALS;
