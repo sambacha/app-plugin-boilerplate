@@ -47,6 +47,7 @@ void handle_init_contract(void *parameters) {
         case ADD_LIQUIDITY_ETH:
         case ADD_LIQUIDITY:
         case REMOVE_LIQUIDITY:
+        case REMOVE_LIQUIDITY_PERMIT:
         case REMOVE_LIQUIDITY_ETH:
         case REMOVE_LIQUIDITY_ETH_PERMIT:
         case REMOVE_LIQUIDITY_ETH_FEE:

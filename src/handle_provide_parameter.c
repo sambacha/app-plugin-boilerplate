@@ -268,6 +268,7 @@ void handle_provide_parameter(void *parameters) {
             handle_remove_liquidity_eth(msg, context);
             break;
         case REMOVE_LIQUIDITY:
+        case REMOVE_LIQUIDITY_PERMIT:
             handle_remove_liquidity(msg, context);
             break;
         default:
