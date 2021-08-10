@@ -241,6 +241,50 @@ static void handle_remove_liquidity_eth(ethPluginProvideParameter_t *msg,
     }
 }
 
+static void handle_swap_tokens_for_exact_tokens(ethPluginProvideParameter_t *msg,
+                                                uniswap_parameters_t *context) {
+    switch (context->next_param) {
+        case AMOUNT_OUT:
+            PRINTF("PENZO OUI OUI OUI OUI OUI OUI!!\n");
+            // PENZO TMP
+            memset(context->token_a_amount_sent, 0, sizeof(context->token_a_amount_sent));
+
+            // Convert to string.
+            amountToString(msg->parameter,
+                           PARAMETER_LENGTH,
+                           0,   // No decimals
+                           "",  // No ticker
+                           (char *) context->token_a_amount_sent,
+                           sizeof(context->token_a_amount_sent));
+
+            PRINTF("PENZO AMOUNT OUT: %s\n", context->token_a_amount_sent);
+            // /PENZO TMP
+            context->next_param = AMOUNT_IN;
+            break;
+        case AMOUNT_IN:
+            PRINTF("PENZO SWAP AMOUNT_IN\n");
+            // PENZO TMP
+            memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
+
+            // Convert to string.
+            amountToString(msg->parameter,
+                           PARAMETER_LENGTH,
+                           0,   // No decimals
+                           "",  // No ticker
+                           (char *) context->token_b_amount_sent,
+                           sizeof(context->token_b_amount_sent));
+
+            PRINTF("PENZO AMOUNT IN: %s\n", context->token_b_amount_sent);
+            // /PENZO TMP
+            context->next_param = AMOUNT_TOKEN_B;
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 void handle_provide_parameter(void *parameters) {
     ethPluginProvideParameter_t *msg = (ethPluginProvideParameter_t *) parameters;
     uniswap_parameters_t *context = (uniswap_parameters_t *) msg->pluginContext;
@@ -270,6 +314,9 @@ void handle_provide_parameter(void *parameters) {
         case REMOVE_LIQUIDITY:
         case REMOVE_LIQUIDITY_PERMIT:
             handle_remove_liquidity(msg, context);
+            break;
+        case SWAP_TOKENS_FOR_EXACT_TOKENS:
+            handle_swap_tokens_for_exact_tokens(msg, context);
             break;
         default:
             PRINTF("Selector Index %d not supported\n", context->selectorIndex);

@@ -36,6 +36,7 @@ static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE[SELECTOR_SIZE] = {0
                                                                                0x0d,
                                                                                0x59,
                                                                                0x84};
+static const uint8_t UNISWAP_TOKENS_FOR_EXACT_TOKENS[SELECTOR_SIZE] = {0x88, 0x03, 0xdb, 0xee};
 
 // Array of all the different uniswap selectors. Make sure this follows the same order as the
 // enum defined in `uniswap_plugin.h`
@@ -48,6 +49,7 @@ const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS] = {
     UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT,
     UNISWAP_REMOVE_LIQUIDITY_ETH_FEE,
     UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE,
+    UNISWAP_TOKENS_FOR_EXACT_TOKENS,
 };
 
 // Function to dispatch calls from the ethereum app.

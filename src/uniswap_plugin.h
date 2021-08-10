@@ -20,7 +20,7 @@
 #define PLUGIN_NAME "Uniswap"
 
 // Number of selectors defined in this plugin.
-#define NUM_UNISWAP_SELECTORS 8
+#define NUM_UNISWAP_SELECTORS 9
 
 // Enumeration of the different selectors possible.
 // Should follow the array declared in main.c
@@ -33,6 +33,7 @@ typedef enum {
     REMOVE_LIQUIDITY_ETH_PERMIT,
     REMOVE_LIQUIDITY_ETH_FEE,
     REMOVE_LIQUIDITY_ETH_PERMIT_FEE,
+    SWAP_TOKENS_FOR_EXACT_TOKENS,
 } uniswapSelector_t;
 
 extern const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS];
@@ -60,6 +61,8 @@ typedef enum {
     AMOUNT_TOKEN_A_MIN,
     AMOUNT_TOKEN_B_MIN,
     AMOUNT_ETH_MIN,
+    AMOUNT_OUT,
+    AMOUNT_IN,
     BENEFICIARY,
     DEADLINE,
     NONE,
