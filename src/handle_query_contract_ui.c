@@ -47,6 +47,15 @@ static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *cont
                      context->ticker_token_a,
                      context->ticker_token_b);
             break;
+        case SWAP_TOKENS_FOR_EXACT_TOKENS:
+            PRINTF("tokenA: %s\n", context->ticker_token_a);
+            strncpy(msg->title, "Swap:", msg->titleLength);
+            snprintf(msg->msg,
+                     msg->msgLength,
+                     "%s for %s",
+                     context->ticker_token_a,
+                     context->ticker_token_b);
+            break;
     }
 }
 

@@ -63,6 +63,8 @@ typedef enum {
     AMOUNT_ETH_MIN,
     AMOUNT_OUT,
     AMOUNT_IN,
+    AMOUNT_IN_MAX,
+    PATH_OFFSET,
     BENEFICIARY,
     DEADLINE,
     NONE,
@@ -79,22 +81,25 @@ typedef enum {
 
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
 typedef struct uniswap_parameters_t {
-    uint8_t token_a_address[ADDRESS_LENGTH];
-    uint8_t token_b_address[ADDRESS_LENGTH];
-    uint8_t token_a_amount_sent[INT256_LENGTH];
-    uint8_t token_b_amount_sent[INT256_LENGTH];
-    char ticker_token_a[MAX_TICKER_LEN];
-    char ticker_token_b[MAX_TICKER_LEN];
-    char beneficiary[ADDRESS_LENGTH];
-    uint8_t screen_array;
-    uint8_t previous_screen_index;
-    uint8_t plugin_screen_index;
+    uint8_t token_a_address[ADDRESS_LENGTH];     // 20
+    uint8_t token_b_address[ADDRESS_LENGTH];     // 20
+    uint8_t token_a_amount_sent[INT256_LENGTH];  // 32
+    uint8_t token_b_amount_sent[INT256_LENGTH];  // 32
+    char ticker_token_a[MAX_TICKER_LEN];         // 12
+    char ticker_token_b[MAX_TICKER_LEN];         // 12
+    uint8_t beneficiary[ADDRESS_LENGTH];         // 20
+    uint8_t screen_array;                        // 1
+    uint8_t previous_screen_index;               // 1
+    uint8_t plugin_screen_index;                 // 1
 
-    uint8_t next_param;
-    uint8_t valid;
-    uint8_t decimals_token_a;
-    uint8_t decimals_token_b;
-    uint8_t selectorIndex;
+    uint16_t path_offset;      // 2
+    uint8_t skip;              // 1
+    uint8_t next_param;        // 1
+    uint8_t valid;             // 1
+    uint8_t decimals_token_a;  // 1
+    uint8_t decimals_token_b;  // 1
+    uint8_t selectorIndex;     // 1
+    // = 159
 } uniswap_parameters_t;
 
 // Piece of code that will check that the above structure is not bigger than 5 * 32. Do not remove

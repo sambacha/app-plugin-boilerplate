@@ -57,27 +57,27 @@ void dispatch_plugin_calls(int message, void *parameters) {
     PRINTF("just in: message: %d\n", message);
     switch (message) {
         case ETH_PLUGIN_INIT_CONTRACT:
+            PRINTF("INIT CONTRACT\n");
             handle_init_contract(parameters);
-            PRINTF("PROUT INIT\n");
             break;
         case ETH_PLUGIN_PROVIDE_PARAMETER:
-            PRINTF("PROVIDE\n");
+            PRINTF("PROVIDE PARAMETER\n");
             handle_provide_parameter(parameters);
             break;
         case ETH_PLUGIN_FINALIZE:
-            PRINTF("GPIRIOU FINALIZE\n");
+            PRINTF("FINALIZE\n");
             handle_finalize(parameters);
             break;
         case ETH_PLUGIN_PROVIDE_TOKEN:
-            PRINTF("GPIRIOU PROVIDE\n");
+            PRINTF("PROVIDE TOKEN\n");
             handle_provide_token(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_ID:
-            PRINTF("GPIROU ID\n");
+            PRINTF("QUERY CONTRACT ID\n");
             handle_query_contract_id(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_UI:
-            PRINTF("UI\n");
+            PRINTF("QUERY CONTRACT UI\n");
             handle_query_contract_ui(parameters);
             break;
         default:

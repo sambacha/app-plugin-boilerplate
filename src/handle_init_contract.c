@@ -42,7 +42,7 @@ void handle_init_contract(void *parameters) {
     }
 
     // Set `next_param` to be the first field we expect to parse.
-    PRINTF("PENZO selector: %u\n", context->selectorIndex);
+    PRINTF("INIT_CONTRACT selector: %u\n", context->selectorIndex);
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
         case ADD_LIQUIDITY:
