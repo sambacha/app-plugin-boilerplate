@@ -241,8 +241,7 @@ static void handle_remove_liquidity_eth(ethPluginProvideParameter_t *msg,
     }
 }
 
-static void handle_swap_tokens_for_exact_tokens(ethPluginProvideParameter_t *msg,
-                                                uniswap_parameters_t *context) {
+static void handle_swap_tokens(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     PRINTF("PENZO msg->offset: %d\n", msg->parameterOffset);
     PRINTF("PENZO next_param: %d, skip: %d\n",
            context->next_param == TOKEN_B_ADDRESS,
@@ -268,20 +267,6 @@ static void handle_swap_tokens_for_exact_tokens(ethPluginProvideParameter_t *msg
             // PENZO should be U2BE ?
             // context->path_offset = msg->parameterOffset;
             PRINTF("CURRENT PARAM: AMOUNT_OUT INIT\n");
-            memset(context->token_a_amount_sent, 0, sizeof(context->token_a_amount_sent));
-            // Convert to string.
-            amountToString(msg->parameter,
-                           PARAMETER_LENGTH,
-                           0,   // No decimals
-                           "",  // No ticker
-                           (char *) context->token_a_amount_sent,
-                           sizeof(context->token_a_amount_sent));
-
-            PRINTF("AMOUNT OUT: %s\n", context->token_a_amount_sent);
-            context->next_param = AMOUNT_IN_MAX;
-            break;
-        case AMOUNT_IN_MAX:
-            PRINTF("CURRENT PARAM: AMOUNT_IN_MAX INIT\n");
             memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
             // Convert to string.
             amountToString(msg->parameter,
@@ -291,7 +276,21 @@ static void handle_swap_tokens_for_exact_tokens(ethPluginProvideParameter_t *msg
                            (char *) context->token_b_amount_sent,
                            sizeof(context->token_b_amount_sent));
 
-            PRINTF("PENZO AMOUNT IN MAX: %s\n", context->token_b_amount_sent);
+            PRINTF("AMOUNT OUT: %s\n", context->token_b_amount_sent);
+            context->next_param = AMOUNT_IN_MAX;
+            break;
+        case AMOUNT_IN_MAX:
+            PRINTF("CURRENT PARAM: AMOUNT_IN_MAX INIT\n");
+            memset(context->token_a_amount_sent, 0, sizeof(context->token_a_amount_sent));
+            // Convert to string.
+            amountToString(msg->parameter,
+                           PARAMETER_LENGTH,
+                           0,   // No decimals
+                           "",  // No ticker
+                           (char *) context->token_a_amount_sent,
+                           sizeof(context->token_a_amount_sent));
+
+            PRINTF("PENZO AMOUNT IN MAX: %s\n", context->token_a_amount_sent);
             context->next_param = PATH_OFFSET;
             break;
         case PATH_OFFSET:
@@ -306,6 +305,7 @@ static void handle_swap_tokens_for_exact_tokens(ethPluginProvideParameter_t *msg
         case BENEFICIARY:
             PRINTF("CURRENT PARAM: BENEFICIARY INIT\n");
             print_bytes(&msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH], ADDRESS_LENGTH);
+            handle_beneficiary(msg, context);
             context->next_param = DEADLINE;
             break;
         case DEADLINE:
@@ -363,8 +363,10 @@ void handle_provide_parameter(void *parameters) {
         case REMOVE_LIQUIDITY_PERMIT:
             handle_remove_liquidity(msg, context);
             break;
+        case SWAP_EXACT_TOKENS_FOR_TOKENS_FEE:
+        case SWAP_TOKENS_FOR_EXACT_ETH:
         case SWAP_TOKENS_FOR_EXACT_TOKENS:
-            handle_swap_tokens_for_exact_tokens(msg, context);
+            handle_swap_tokens(msg, context);
             break;
         default:
             PRINTF("Selector Index %d not supported\n", context->selectorIndex);

@@ -54,6 +54,8 @@ void handle_init_contract(void *parameters) {
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             context->next_param = TOKEN_A_ADDRESS;
             break;
+        case SWAP_EXACT_TOKENS_FOR_TOKENS_FEE:
+        case SWAP_TOKENS_FOR_EXACT_ETH:
         case SWAP_TOKENS_FOR_EXACT_TOKENS:
             context->next_param = AMOUNT_OUT;
             break;

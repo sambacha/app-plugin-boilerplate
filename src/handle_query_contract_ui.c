@@ -29,7 +29,7 @@ static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *cont
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
             PRINTF("tokenA: %s\n", context->ticker_token_a);
-            strncpy(msg->title, "Liquidity pool:", msg->titleLength);
+            strncpy(msg->title, "Liquidity Pool:", msg->titleLength);
             snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
             break;
         case ADD_LIQUIDITY:
@@ -40,13 +40,15 @@ static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *cont
         case REMOVE_LIQUIDITY_ETH_FEE:
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             PRINTF("tokenB: %s\n", context->ticker_token_b);
-            strncpy(msg->title, "Liquidity pool:", msg->titleLength);
+            strncpy(msg->title, "Liquidity Pool:", msg->titleLength);
             snprintf(msg->msg,
                      msg->msgLength,
                      "%s / %s",
                      context->ticker_token_a,
                      context->ticker_token_b);
             break;
+        case SWAP_EXACT_TOKENS_FOR_TOKENS_FEE:
+        case SWAP_TOKENS_FOR_EXACT_ETH:
         case SWAP_TOKENS_FOR_EXACT_TOKENS:
             PRINTF("tokenA: %s\n", context->ticker_token_a);
             strncpy(msg->title, "Swap:", msg->titleLength);
@@ -86,6 +88,11 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             strncpy(msg->title, "Remove:", msg->titleLength);
             break;
+        case SWAP_EXACT_TOKENS_FOR_TOKENS_FEE:
+        case SWAP_TOKENS_FOR_EXACT_ETH:
+        case SWAP_TOKENS_FOR_EXACT_TOKENS:
+            strncpy(msg->title, "Swap:", msg->titleLength);
+            break;
         default:
             PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
             msg->result = ETH_PLUGIN_RESULT_ERROR;
@@ -113,6 +120,11 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case REMOVE_LIQUIDITY_ETH_FEE:
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             strncpy(msg->title, "Remove:", msg->titleLength);
+            break;
+        case SWAP_EXACT_TOKENS_FOR_TOKENS_FEE:
+        case SWAP_TOKENS_FOR_EXACT_ETH:
+        case SWAP_TOKENS_FOR_EXACT_TOKENS:
+            strncpy(msg->title, "Swap:", msg->titleLength);
             break;
         default:
             PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
