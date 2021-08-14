@@ -47,6 +47,7 @@ static void set_tx_type_ui(ethQueryContractUI_t *msg, uniswap_parameters_t *cont
                      context->ticker_token_a,
                      context->ticker_token_b);
             break;
+        case SWAP_EXACT_TOKENS_FOR_TOKENS:
         case SWAP_EXACT_TOKENS_FOR_TOKENS_FEE:
         case SWAP_TOKENS_FOR_EXACT_ETH:
         case SWAP_TOKENS_FOR_EXACT_TOKENS:
@@ -88,6 +89,7 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             strncpy(msg->title, "Remove:", msg->titleLength);
             break;
+        case SWAP_EXACT_TOKENS_FOR_TOKENS:
         case SWAP_EXACT_TOKENS_FOR_TOKENS_FEE:
         case SWAP_TOKENS_FOR_EXACT_ETH:
         case SWAP_TOKENS_FOR_EXACT_TOKENS:
@@ -121,6 +123,7 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             strncpy(msg->title, "Remove:", msg->titleLength);
             break;
+        case SWAP_EXACT_TOKENS_FOR_TOKENS:
         case SWAP_EXACT_TOKENS_FOR_TOKENS_FEE:
         case SWAP_TOKENS_FOR_EXACT_ETH:
         case SWAP_TOKENS_FOR_EXACT_TOKENS:
