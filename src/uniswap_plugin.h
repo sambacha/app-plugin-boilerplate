@@ -20,7 +20,7 @@
 #define PLUGIN_NAME "Uniswap"
 
 // Number of selectors defined in this plugin.
-#define NUM_UNISWAP_SELECTORS 12
+#define NUM_UNISWAP_SELECTORS 16
 
 // Enumeration of the different selectors possible.
 // Should follow the array declared in main.c
@@ -33,6 +33,10 @@ typedef enum {
     REMOVE_LIQUIDITY_ETH_PERMIT,
     REMOVE_LIQUIDITY_ETH_FEE,
     REMOVE_LIQUIDITY_ETH_PERMIT_FEE,
+    SWAP_EXACT_ETH_FOR_TOKENS,
+    SWAP_EXACT_ETH_FOR_TOKENS_FEE,
+    SWAP_EXACT_TOKENS_FOR_ETH,
+    SWAP_EXACT_TOKENS_FOR_ETH_FEE,
     SWAP_EXACT_TOKENS_FOR_TOKENS,
     SWAP_EXACT_TOKENS_FOR_TOKENS_FEE,
     SWAP_TOKENS_FOR_EXACT_ETH,

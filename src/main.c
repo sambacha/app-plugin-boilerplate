@@ -36,6 +36,16 @@ static const uint8_t UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE[SELECTOR_SIZE] = {0
                                                                                0x0d,
                                                                                0x59,
                                                                                0x84};
+static const uint8_t UNISWAP_SWAP_EXACT_ETH_FOR_TOKENS[SELECTOR_SIZE] = {0x7f, 0xf3, 0x6a, 0xb5};
+static const uint8_t UNISWAP_SWAP_EXACT_ETH_FOR_TOKENS_FEE[SELECTOR_SIZE] = {0xb6,
+                                                                             0xf9,
+                                                                             0xde,
+                                                                             0x95};
+static const uint8_t UNISWAP_SWAP_EXACT_TOKENS_FOR_ETH[SELECTOR_SIZE] = {0x18, 0xcb, 0xaf, 0xe5};
+static const uint8_t UNISWAP_SWAP_EXACT_TOKENS_FOR_ETH_FEE[SELECTOR_SIZE] = {0x79,
+                                                                             0x1a,
+                                                                             0xc9,
+                                                                             0x47};
 static const uint8_t UNISWAP_SWAP_EXACT_TOKENS_FOR_TOKENS[SELECTOR_SIZE] = {0x38, 0xed, 0x17, 0x39};
 static const uint8_t UNISWAP_SWAP_EXACT_TOKENS_FOR_TOKENS_FEE[SELECTOR_SIZE] = {0x5c,
                                                                                 0x11,
@@ -55,6 +65,10 @@ const uint8_t *const UNISWAP_SELECTORS[NUM_UNISWAP_SELECTORS] = {
     UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT,
     UNISWAP_REMOVE_LIQUIDITY_ETH_FEE,
     UNISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE,
+    UNISWAP_SWAP_EXACT_ETH_FOR_TOKENS,
+    UNISWAP_SWAP_EXACT_ETH_FOR_TOKENS_FEE,
+    UNISWAP_SWAP_EXACT_TOKENS_FOR_ETH,
+    UNISWAP_SWAP_EXACT_TOKENS_FOR_ETH_FEE,
     UNISWAP_SWAP_EXACT_TOKENS_FOR_TOKENS,
     UNISWAP_SWAP_EXACT_TOKENS_FOR_TOKENS_FEE,
     UNISWAP_SWAP_TOKENS_FOR_EXACT_ETH,
