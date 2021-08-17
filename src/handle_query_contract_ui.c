@@ -127,20 +127,20 @@ static void set_amount_token_a_ui(ethQueryContractUI_t *msg, uniswap_parameters_
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;
     }
-    // amountToString(context->token_a_amount_sent,
-    //    sizeof(context->token_a_amount_sent),
-    //    context->token_a_decimals,  // No decimals, will be set afterwards.
-    //    context->ticker_token_a,    // No ticker
-    //    msg->msg,
-    //    msg->msgLength);
+    amountToString(context->token_a_amount_sent,
+                   sizeof(context->token_a_amount_sent),
+                   context->decimals_token_a,  // No decimals, will be set afterwards.
+                   context->ticker_token_a,    // No ticker
+                   msg->msg,
+                   msg->msgLength);
 
-    adjustDecimals(
-        (char *) context->token_a_amount_sent,
-        strnlen((char *) context->token_a_amount_sent, sizeof(context->token_a_amount_sent)),
-        msg->msg,
-        msg->msgLength,
-        context->decimals_token_a);
-    prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_a);
+    // adjustDecimals(
+    // (char *) context->token_a_amount_sent,
+    // strnlen((char *) context->token_a_amount_sent, sizeof(context->token_a_amount_sent)),
+    // msg->msg,
+    // msg->msgLength,
+    // context->decimals_token_a);
+    // prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_a);
     // PRINTF("GPIRIOU CACAAAAAAAAAAA\n");
 }
 
@@ -173,28 +173,29 @@ static void set_amount_token_b_ui(ethQueryContractUI_t *msg, uniswap_parameters_
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;
     }
+    PRINTF("GPIRIOU CALL AMOUUUUUUUNT TO STRING\n");
+    // PRINTF("GPIRIOU MSG->MSG= %s\n", msg->msg);
     amountToString(context->token_b_amount_sent,
                    sizeof(context->token_b_amount_sent),
-                   0,
-                   "",
-                   (char *) context->token_b_amount_sent,
-                   sizeof(context->token_b_amount_sent));
+                   context->decimals_token_b,
+                   context->ticker_token_b,
+                   msg->msg,
+                   msg->msgLength);
     PRINTF("GPIRIOU BBBBBBBB MSG->MSG= %s\n", msg->msg);
-    adjustDecimals(
-        (char *) context->token_b_amount_sent,
-        strnlen((char *) context->token_b_amount_sent, sizeof(context->token_b_amount_sent)),
-        msg->msg,
-        msg->msgLength,
-        context->decimals_token_b);
-    prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_b);
+    PRINTF("GPIRIOU msg length:%d\n", msg->msgLength);
+    PRINTF("GPIRIOU token b amout sent:\n");
+    print_bytes(context->token_b_amount_sent, sizeof(context->token_b_amount_sent));
+    PRINTF("GPIRIOU msg in bytes:\n");
+    print_bytes((const uint8_t *) msg->msg, msg->msgLength);
+    // adjustDecimals(
+    // (char *) context->token_b_amount_sent,
+    // strnlen((char *) context->token_b_amount_sent, sizeof(context->token_b_amount_sent)),
+    // msg->msg,
+    // msg->msgLength,
+    // context->decimals_token_b);
+    // prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_b);
     PRINTF("GPIRIOU DEBUG STAT:\n");
-    print_bytes(context->token_b_amount_sent, sizeof(context->token_b_amount_sent));
-    PRINTF("GPIRIOU MSG->MSG= %s\n", msg->msg);
-    PRINTF("GPIRIOU DEBUG 222 print bytes:\n");
-    print_bytes(context->token_b_amount_sent, sizeof(context->token_b_amount_sent));
     // PRINTF("GPIRIOU DEBUG 333 print msg:\n");
-    PRINTF("GPIRIOU MSG->MSG= %s\n", msg->msg);
-    // print_bytes(context->token_b_amount_sent, sizeof(context->token_b_amount_sent));
 }
 
 static void set_beneficiary_warning_ui(ethQueryContractUI_t *msg,
