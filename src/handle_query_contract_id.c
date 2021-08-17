@@ -29,7 +29,7 @@ void handle_query_contract_id(void *parameters) {
         case SWAP_EXACT_TOKENS_FOR_TOKENS_FEE:
         case SWAP_TOKENS_FOR_EXACT_ETH:
         case SWAP_TOKENS_FOR_EXACT_TOKENS:
-            strncpy(msg->version, "Swap Tokens", msg->versionLength);
+            strncpy(msg->version, "Swap tokens", msg->versionLength);
             break;
         default:
             PRINTF("Selector Index :%d not supported\n", context->selectorIndex);

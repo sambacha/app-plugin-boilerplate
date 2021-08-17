@@ -45,6 +45,8 @@ void handle_init_contract(void *parameters) {
     PRINTF("INIT_CONTRACT selector: %u\n", context->selectorIndex);
     switch (context->selectorIndex) {
         case ADD_LIQUIDITY_ETH:
+            context->next_param = TOKEN_B_ADDRESS;
+            break;
         case ADD_LIQUIDITY:
         case REMOVE_LIQUIDITY:
         case REMOVE_LIQUIDITY_PERMIT:

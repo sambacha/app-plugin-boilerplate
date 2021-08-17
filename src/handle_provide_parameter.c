@@ -19,48 +19,18 @@ static void handle_token_b_address(ethPluginProvideParameter_t *msg,
     PRINTF("GPIRIOU TOKEN_B_ADDRESS CONTRACT: %.*H\n", ADDRESS_LENGTH, context->token_b_address);
 }
 
-// Store the amount sent in the form of a string, without any ticker or
-// decimals. These will be added when displaying.
-
-// static void handle_eth_amount(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
-//     memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
-
-//     // Convert to string.
-//     amountToString(msg->parameter,
-//                    PARAMETER_LENGTH,
-//                    0,
-//                    "",
-//                    (char *) context->token_b_amount_sent,
-//                    sizeof(context->token_b_amount_sent));
-//     PRINTF("AMOUNT SENT: %s\n", context->token_b_amount_sent);
-// }
-
 static void handle_token_a_amount(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     memset(context->token_a_amount_sent, 0, sizeof(context->token_a_amount_sent));
-
-    // Convert to string.
-    amountToString(msg->parameter,
-                   PARAMETER_LENGTH,
-                   0,   // No decimals
-                   "",  // No ticker
-                   (char *) context->token_a_amount_sent,
-                   sizeof(context->token_a_amount_sent));
-
-    PRINTF("TOKEN_A_ADDRESS A AMOUNT SENT: %s\n", context->token_a_amount_sent);
+    memcpy(context->token_a_amount_sent, &msg->parameter, sizeof(context->token_a_amount_sent));
+    PRINTF("GPIRIOU TEST TOKEN A AMOUNT:\n");
+    print_bytes(context->token_a_amount_sent, sizeof(context->token_a_amount_sent));
 }
 
 static void handle_token_b_amount(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
-
-    // Convert to string.
-    amountToString(msg->parameter,
-                   PARAMETER_LENGTH,
-                   0,   // No decimals
-                   "",  // No ticker
-                   (char *) context->token_b_amount_sent,
-                   sizeof(context->token_b_amount_sent));
-    PRINTF("GPIRIOU handle_token_b_amount() token_b_amount_sent: %s\n",
-           context->token_b_amount_sent);
+    memcpy(context->token_b_amount_sent, &msg->parameter, sizeof(context->token_b_amount_sent));
+    PRINTF("GPIRIOU TEST TOKEN B AMOUNT:\n");
+    print_bytes(context->token_b_amount_sent, sizeof(context->token_b_amount_sent));
 }
 
 static void handle_beneficiary(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
@@ -74,22 +44,22 @@ static void handle_beneficiary(ethPluginProvideParameter_t *msg, uniswap_paramet
 static void handle_add_liquidity_eth(ethPluginProvideParameter_t *msg,
                                      uniswap_parameters_t *context) {
     // Describe ABI
+    PRINTF("GPIRIOU handle_add_liquidity eth\n");
     switch (context->next_param) {
-        case TOKEN_A_ADDRESS:  // deposited token address
-            handle_token_a_address(msg, context);
-            context->next_param = AMOUNT_TOKEN_A;
+        case TOKEN_B_ADDRESS:  // Token A is ETH
+            handle_token_b_address(msg, context);
+            context->next_param = AMOUNT_TOKEN_B;
             break;
-        case AMOUNT_TOKEN_A:  // token amount deposited
-            handle_token_a_amount(msg, context);
+        case AMOUNT_TOKEN_B:  // token amount deposited
+            handle_token_b_amount(msg, context);
             PRINTF("after\n");
-            context->next_param = AMOUNT_TOKEN_A_MIN;
+            context->next_param = AMOUNT_TOKEN_B_MIN;
             break;
-        case AMOUNT_TOKEN_A_MIN:  // not used
+        case AMOUNT_TOKEN_B_MIN:  // not used       !! AMOUNT TOKEN A ????
             PRINTF("token min\n");
             context->next_param = AMOUNT_ETH_MIN;
             break;
-        case AMOUNT_ETH_MIN:
-            // handle_eth_amount(msg, context); // this is useless as we don't use this variable
+        case AMOUNT_ETH_MIN:  // not used
             PRINTF("eth min\n");
             context->next_param = BENEFICIARY;
             break;
@@ -124,7 +94,7 @@ static void handle_add_liquidity(ethPluginProvideParameter_t *msg, uniswap_param
             break;
         case AMOUNT_TOKEN_A:  // token amount sent
             handle_token_a_amount(msg, context);
-            PRINTF("after\n");
+            PRINTF("GPIRIOU HANDLE TOKEN A AMOUNT\n");
             context->next_param = AMOUNT_TOKEN_B;
             break;
         case AMOUNT_TOKEN_B:  // token amount sent
@@ -268,21 +238,7 @@ static void handle_swap_eth(ethPluginProvideParameter_t *msg, uniswap_parameters
             // GPIRIOU should be U2BE ?
             // context->path_offset = msg->parameterOffset;
             PRINTF("CURRENT PARAM: AMOUNT_IN INIT\n");
-            memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
-            // Convert to string.
-            amountToString(msg->parameter,
-                           PARAMETER_LENGTH,
-                           0,   // No decimals
-                           "",  // No ticker
-                           (char *) context->token_b_amount_sent,
-                           sizeof(context->token_b_amount_sent));
-
-            // amountToString((uint8_t *) msg->pluginSharedRO->txContent->value.value,
-            //               msg->pluginSharedRO->txContent->value.length,
-            //               WEI_TO_ETHER,
-            //               "ETH ",
-            //               msg->msg,
-            //               msg->msgLength);
+            handle_token_b_amount(msg, context);  // Token A is ETH
             PRINTF("AMOUNT OUT: %s\n", context->token_b_amount_sent);
             context->next_param = PATH_OFFSET;
             break;
@@ -308,19 +264,13 @@ static void handle_swap_eth(ethPluginProvideParameter_t *msg, uniswap_parameters
         case TOKEN_A_ADDRESS:
             PRINTF("CURRENT PARAM: TOKEN_A_ADDRESS\n");
             print_bytes(&msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH], ADDRESS_LENGTH);
-            memset(context->token_a_address, 0, sizeof(context->token_a_address));
-            memcpy(context->token_a_address,
-                   &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
-                   sizeof(context->token_a_address));
+            handle_token_a_address(msg, context);
             context->next_param = TOKEN_B_ADDRESS;
             break;
         case TOKEN_B_ADDRESS:
             PRINTF("CURRENT PARAM: TOKEN_B_ADDRESS\n");
             print_bytes(&msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH], ADDRESS_LENGTH);
-            memset(context->token_b_address, 0, sizeof(context->token_b_address));
-            memcpy(context->token_b_address,
-                   &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
-                   sizeof(context->token_b_address));
+            handle_token_b_address(msg, context);
             context->next_param = NONE;
             break;
         case NONE:
@@ -359,29 +309,13 @@ static void handle_swap_exact_tokens(ethPluginProvideParameter_t *msg,
             // GPIRIOU should be U2BE ?
             // context->path_offset = msg->parameterOffset;
             PRINTF("CURRENT PARAM: AMOUNT_IN INIT\n");
-            memset(context->token_a_amount_sent, 0, sizeof(context->token_a_amount_sent));
-            // Convert to string.
-            amountToString(msg->parameter,
-                           PARAMETER_LENGTH,
-                           0,   // No decimals
-                           "",  // No ticker
-                           (char *) context->token_a_amount_sent,
-                           sizeof(context->token_a_amount_sent));
-
+            handle_token_a_amount(msg, context);
             PRINTF("AMOUNT OUT: %s\n", context->token_a_amount_sent);
             context->next_param = AMOUNT_OUT;
             break;
         case AMOUNT_OUT:
             PRINTF("CURRENT PARAM: AMOUNT_IN_MAX INIT\n");
-            memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
-            // Convert to string.
-            amountToString(msg->parameter,
-                           PARAMETER_LENGTH,
-                           0,   // No decimals
-                           "",  // No ticker
-                           (char *) context->token_b_amount_sent,
-                           sizeof(context->token_b_amount_sent));
-
+            handle_token_b_amount(msg, context);
             PRINTF("GPIRIOU AMOUNT IN MAX: %s\n", context->token_b_amount_sent);
             context->next_param = PATH_OFFSET;
             break;
@@ -407,19 +341,13 @@ static void handle_swap_exact_tokens(ethPluginProvideParameter_t *msg,
         case TOKEN_A_ADDRESS:
             PRINTF("CURRENT PARAM: TOKEN_A_ADDRESS\n");
             print_bytes(&msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH], ADDRESS_LENGTH);
-            memset(context->token_a_address, 0, sizeof(context->token_a_address));
-            memcpy(context->token_a_address,
-                   &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
-                   sizeof(context->token_a_address));
+            handle_token_a_address(msg, context);
             context->next_param = TOKEN_B_ADDRESS;
             break;
         case TOKEN_B_ADDRESS:
             PRINTF("CURRENT PARAM: TOKEN_B_ADDRESS\n");
             print_bytes(&msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH], ADDRESS_LENGTH);
-            memset(context->token_b_address, 0, sizeof(context->token_b_address));
-            memcpy(context->token_b_address,
-                   &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
-                   sizeof(context->token_b_address));
+            handle_token_b_address(msg, context);
             context->next_param = NONE;
             break;
         case NONE:
@@ -457,29 +385,13 @@ static void handle_swap_tokens(ethPluginProvideParameter_t *msg, uniswap_paramet
             // GPIRIOU should be U2BE ?
             // context->path_offset = msg->parameterOffset;
             PRINTF("CURRENT PARAM: AMOUNT_OUT INIT\n");
-            memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
-            // Convert to string.
-            amountToString(msg->parameter,
-                           PARAMETER_LENGTH,
-                           0,   // No decimals
-                           "",  // No ticker
-                           (char *) context->token_b_amount_sent,
-                           sizeof(context->token_b_amount_sent));
-
+            handle_token_b_amount(msg, context);
             PRINTF("AMOUNT OUT: %s\n", context->token_b_amount_sent);
             context->next_param = AMOUNT_IN_MAX;
             break;
         case AMOUNT_IN_MAX:
             PRINTF("CURRENT PARAM: AMOUNT_IN_MAX INIT\n");
-            memset(context->token_a_amount_sent, 0, sizeof(context->token_a_amount_sent));
-            // Convert to string.
-            amountToString(msg->parameter,
-                           PARAMETER_LENGTH,
-                           0,   // No decimals
-                           "",  // No ticker
-                           (char *) context->token_a_amount_sent,
-                           sizeof(context->token_a_amount_sent));
-
+            handle_token_b_amount(msg, context);
             PRINTF("GPIRIOU AMOUNT IN MAX: %s\n", context->token_a_amount_sent);
             context->next_param = PATH_OFFSET;
             break;
@@ -505,19 +417,13 @@ static void handle_swap_tokens(ethPluginProvideParameter_t *msg, uniswap_paramet
         case TOKEN_A_ADDRESS:
             PRINTF("CURRENT PARAM: TOKEN_A_ADDRESS\n");
             print_bytes(&msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH], ADDRESS_LENGTH);
-            memset(context->token_a_address, 0, sizeof(context->token_a_address));
-            memcpy(context->token_a_address,
-                   &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
-                   sizeof(context->token_a_address));
+            handle_token_a_address(msg, context);
             context->next_param = TOKEN_B_ADDRESS;
             break;
         case TOKEN_B_ADDRESS:
             PRINTF("CURRENT PARAM: TOKEN_B_ADDRESS\n");
             print_bytes(&msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH], ADDRESS_LENGTH);
-            memset(context->token_b_address, 0, sizeof(context->token_b_address));
-            memcpy(context->token_b_address,
-                   &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
-                   sizeof(context->token_b_address));
+            handle_token_b_address(msg, context);
             context->next_param = NONE;
             break;
         case NONE:
