@@ -29,8 +29,6 @@ static void handle_token_a_amount(ethPluginProvideParameter_t *msg, uniswap_para
 static void handle_token_b_amount(ethPluginProvideParameter_t *msg, uniswap_parameters_t *context) {
     memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
     memcpy(context->token_b_amount_sent, msg->parameter, sizeof(context->token_b_amount_sent));
-    PRINTF("GPIRIOU PRINT PARAMETER:\n");
-    print_bytes(msg->parameter, PARAMETER_LENGTH);
     PRINTF("GPIRIOU TEST TOKEN B AMOUNT:\n");
     print_bytes(context->token_b_amount_sent, sizeof(context->token_b_amount_sent));
 }
@@ -392,9 +390,10 @@ static void handle_swap_tokens(ethPluginProvideParameter_t *msg, uniswap_paramet
             context->next_param = AMOUNT_IN_MAX;
             break;
         case AMOUNT_IN_MAX:
-            PRINTF("CURRENT PARAM: AMOUNT_IN_MAX INIT\n");
-            handle_token_b_amount(msg, context);
-            PRINTF("GPIRIOU AMOUNT IN MAX: %s\n", context->token_a_amount_sent);
+            // PRINTF("CURRENT PARAM: AMOUNT_IN_MAX INIT\n");
+            handle_token_a_amount(msg, context);
+            PRINTF("GPIRIOU AMOUNT AFTER HANDLE A\n");
+            print_bytes(context->token_a_amount_sent, sizeof(context->token_a_amount_sent));
             context->next_param = PATH_OFFSET;
             break;
         case PATH_OFFSET:
@@ -461,6 +460,7 @@ void handle_provide_parameter(void *parameters) {
         case REMOVE_LIQUIDITY_PERMIT:
             handle_remove_liquidity(msg, context);
             break;
+        case SWAP_ETH_FOR_EXACT_TOKENS:
         case SWAP_EXACT_ETH_FOR_TOKENS:
         case SWAP_EXACT_ETH_FOR_TOKENS_FEE:
             handle_swap_eth(msg, context);

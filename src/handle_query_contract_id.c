@@ -12,7 +12,6 @@ void handle_query_contract_id(void *parameters) {
         case ADD_LIQUIDITY:
             strncpy(msg->version, "Add liquidity", msg->versionLength);
             break;
-        // case REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS:
         case REMOVE_LIQUIDITY:
         case REMOVE_LIQUIDITY_PERMIT:
         case REMOVE_LIQUIDITY_ETH:
@@ -21,6 +20,7 @@ void handle_query_contract_id(void *parameters) {
         case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
             strncpy(msg->version, "Remove liquidity", msg->versionLength);
             break;
+        case SWAP_ETH_FOR_EXACT_TOKENS:
         case SWAP_EXACT_ETH_FOR_TOKENS:
         case SWAP_EXACT_ETH_FOR_TOKENS_FEE:
         case SWAP_EXACT_TOKENS_FOR_ETH:
