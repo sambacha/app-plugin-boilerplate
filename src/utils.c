@@ -1,4 +1,4 @@
-#include "boilerplate_plugin.h"
+#include "sushiswap_plugin.h"
 #include "eth_internals.h"
 
 void get_public_key(uint8_t bip32PathLength,
@@ -9,7 +9,6 @@ void get_public_key(uint8_t bip32PathLength,
     uint8_t privateKeyData[INT256_LENGTH];
     cx_ecfp_private_key_t privateKey;
     cx_ecfp_public_key_t publicKey;
-
     if (outLength != ADDRESS_LENGTH) {
         memset(out, 0, outLength);
         return;

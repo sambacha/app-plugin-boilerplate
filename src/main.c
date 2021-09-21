@@ -21,42 +21,64 @@
 
 #include "os.h"
 #include "cx.h"
-
-#include "boilerplate_plugin.h"
+#include "sushiswap_plugin.h"
 
 // Define here all the selectors you wish to support.
 
-// Example of selector 1
-static const uint8_t BOILERPLATE_DUMMY_SELECTOR_1[SELECTOR_SIZE] = {0xde, 0xad, 0xbe, 0xef};
-// Example of selector 2
-static const uint8_t BOILERPLATE_DUMMY_SELECTOR_2[SELECTOR_SIZE] = {0x13, 0x37, 0x42, 0x42};
+static const uint8_t SUSHISWAP_ADD_LIQUIDITY[SELECTOR_SIZE] = {0xe8, 0xe3, 0x37, 0x00};
+static const uint8_t SUSHISWAP_ADD_LIQUIDITY_ETH[SELECTOR_SIZE] = {0xf3, 0x05, 0xd7, 0x19};
+static const uint8_t SUSHISWAP_REMOVE_LIQUIDITY[SELECTOR_SIZE] = {0xba, 0xa2, 0xab, 0xde};
+static const uint8_t SUSHISWAP_REMOVE_LIQUIDITY_PERMIT[SELECTOR_SIZE] = {0x21, 0x95, 0x99, 0x5c};
+static const uint8_t SUSHISWAP_REMOVE_LIQUIDITY_ETH[SELECTOR_SIZE] = {0x02, 0x75, 0x1c, 0xec};
+static const uint8_t SUSHISWAP_REMOVE_LIQUIDITY_ETH_PERMIT[SELECTOR_SIZE] = {0xde,
+                                                                             0xd9,
+                                                                             0x38,
+                                                                             0x2a};
+static const uint8_t SUSHISWAP_REMOVE_LIQUIDITY_ETH_FEE[SELECTOR_SIZE] = {0xaf, 0x29, 0x79, 0xeb};
+static const uint8_t SUSHISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE[SELECTOR_SIZE] = {0x5b,
+                                                                                 0x0d,
+                                                                                 0x59,
+                                                                                 0x84};
 
-// Array of all the different boilerplate selectors. Make sure this follows the same order as the
-// enum defined in `boilerplate_plugin.h`
-const uint8_t *const BOILERPLATE_SELECTORS[NUM_BOILERPLATE_SELECTORS] = {
-    BOILERPLATE_DUMMY_SELECTOR_1,
-    BOILERPLATE_DUMMY_SELECTOR_2,
+// Array of all the different sushiswap selectors. Make sure this follows the same order as the
+// enum defined in `sushiswap_plugin.h`
+const uint8_t *const SUSHISWAP_SELECTORS[NUM_SUSHISWAP_SELECTORS] = {
+    SUSHISWAP_ADD_LIQUIDITY,
+    SUSHISWAP_ADD_LIQUIDITY_ETH,
+    SUSHISWAP_REMOVE_LIQUIDITY,
+    SUSHISWAP_REMOVE_LIQUIDITY_PERMIT,
+    SUSHISWAP_REMOVE_LIQUIDITY_ETH,
+    SUSHISWAP_REMOVE_LIQUIDITY_ETH_PERMIT,
+    SUSHISWAP_REMOVE_LIQUIDITY_ETH_FEE,
+    SUSHISWAP_REMOVE_LIQUIDITY_ETH_PERMIT_FEE,
 };
 
 // Function to dispatch calls from the ethereum app.
 void dispatch_plugin_calls(int message, void *parameters) {
+    PRINTF("just in: message: %d\n", message);
     switch (message) {
         case ETH_PLUGIN_INIT_CONTRACT:
             handle_init_contract(parameters);
+            PRINTF("PROUT INIT\n");
             break;
         case ETH_PLUGIN_PROVIDE_PARAMETER:
+            PRINTF("PROVIDE\n");
             handle_provide_parameter(parameters);
             break;
         case ETH_PLUGIN_FINALIZE:
+            PRINTF("DEVELOPER FINALIZE\n");
             handle_finalize(parameters);
             break;
         case ETH_PLUGIN_PROVIDE_TOKEN:
+            PRINTF("DEVELOPER PROVIDE\n");
             handle_provide_token(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_ID:
+            PRINTF("GPIROU ID\n");
             handle_query_contract_id(parameters);
             break;
         case ETH_PLUGIN_QUERY_CONTRACT_UI:
+            PRINTF("UI\n");
             handle_query_contract_ui(parameters);
             break;
         default:

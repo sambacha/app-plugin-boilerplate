@@ -1,17 +1,25 @@
-#include "boilerplate_plugin.h"
+#include "sushiswap_plugin.h"
 
 void handle_query_contract_id(void *parameters) {
     ethQueryContractID_t *msg = (ethQueryContractID_t *) parameters;
-    boilerplate_parameters_t *context = (boilerplate_parameters_t *) msg->pluginContext;
+    sushiswap_parameters_t *context = (sushiswap_parameters_t *) msg->pluginContext;
 
+    // set 'Sushiswap' title.
     strncpy(msg->name, PLUGIN_NAME, msg->nameLength);
 
     switch (context->selectorIndex) {
-        case BOILERPLATE_DUMMY_1:
-            strncpy(msg->version, "Send", msg->versionLength);
+        case ADD_LIQUIDITY_ETH:
+        case ADD_LIQUIDITY:
+            strncpy(msg->version, "Add liquidity", msg->versionLength);
             break;
-        case BOILERPLATE_DUMMY_2:
-            strncpy(msg->version, "Receive", msg->versionLength);
+        // case REMOVE_LIQUIDITY_ETH_SUPPORTING_FEE_ON_TRANSFER_TOKENS:
+        case REMOVE_LIQUIDITY:
+        case REMOVE_LIQUIDITY_PERMIT:
+        case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
+            strncpy(msg->version, "Remove liquidity", msg->versionLength);
             break;
         default:
             PRINTF("Selector Index :%d not supported\n", context->selectorIndex);

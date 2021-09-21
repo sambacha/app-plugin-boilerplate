@@ -1,36 +1,49 @@
-#include "boilerplate_plugin.h"
+#include "sushiswap_plugin.h"
 
 void handle_provide_token(void *parameters) {
     ethPluginProvideToken_t *msg = (ethPluginProvideToken_t *) parameters;
-    boilerplate_parameters_t *context = (boilerplate_parameters_t *) msg->pluginContext;
+    sushiswap_parameters_t *context = (sushiswap_parameters_t *) msg->pluginContext;
     PRINTF("plugin provide token: 0x%p, 0x%p\n", msg->token1, msg->token2);
 
     if (msg->token1) {
-        context->decimals_sent = msg->token1->decimals;
-        strncpy(context->ticker_sent, (char *) msg->token1->ticker, sizeof(context->ticker_sent));
-
-        // Keep track that we found the token.
-        context->tokens_found |= TOKEN_SENT_FOUND;
+        context->decimals_token_a = msg->token1->decimals;
+        strncpy(context->ticker_token_a,
+                (char *) msg->token1->ticker,
+                sizeof(context->ticker_token_a));
     } else {
-        context->decimals_sent = DEFAULT_DECIMAL;
-        strncpy(context->ticker_sent, DEFAULT_TICKER, sizeof(context->ticker_sent));
-
+        context->decimals_token_a = DEFAULT_DECIMAL;
+        strncpy(context->ticker_token_a, DEFAULT_TICKER, sizeof(context->ticker_token_a));
         // We will need an additional screen to display a warning message.
+        context->screen_array |= WARNING_TOKEN_A_UI;
         msg->additionalScreens++;
     }
+
+    // No need to check token2 for ADD_LIQUIDITY_ETH
+    if (context->selectorIndex == ADD_LIQUIDITY_ETH) {
+        msg->result = ETH_PLUGIN_RESULT_OK;
+        return;
+    }
+
+    // No need to check token2 for REMOVE_LIQUIDITY_ETH_PERMIT
+    if (context->selectorIndex == REMOVE_LIQUIDITY_ETH ||
+        context->selectorIndex == REMOVE_LIQUIDITY_ETH_PERMIT ||
+        context->selectorIndex == REMOVE_LIQUIDITY_ETH_FEE ||
+        context->selectorIndex == REMOVE_LIQUIDITY_ETH_PERMIT_FEE) {
+        context->decimals_token_b = WETH_DECIMALS;
+        strncpy(context->ticker_token_b, "WETH ", 5);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+        return;
+    }
+
     if (msg->token2) {
-        context->decimals_received = msg->token2->decimals;
-        strncpy(context->ticker_received,
+        context->decimals_token_b = msg->token2->decimals;
+        strncpy(context->ticker_token_b,
                 (char *) msg->token2->ticker,
-                sizeof(context->ticker_received));
-
-        // Keep track that we found the token.
-        context->tokens_found |= TOKEN_RECEIVED_FOUND;
+                sizeof(context->ticker_token_b));
     } else {
-        context->decimals_received = DEFAULT_DECIMAL;
-        strncpy(context->ticker_received, DEFAULT_TICKER, sizeof(context->ticker_received));
-
-        // We will need an additional screen to display a warning message.
+        context->decimals_token_b = DEFAULT_DECIMAL;
+        strncpy(context->ticker_token_b, DEFAULT_TICKER, sizeof(context->ticker_token_b));
+        context->screen_array |= WARNING_TOKEN_B_UI;
         msg->additionalScreens++;
     }
 

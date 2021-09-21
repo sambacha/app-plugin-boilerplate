@@ -1,4 +1,4 @@
-#include "boilerplate_plugin.h"
+#include "sushiswap_plugin.h"
 
 // Prepend `dest` with `ticker`.
 // Dest must be big enough to hold `ticker` + `dest` + `\0`.
@@ -25,158 +25,237 @@ static void prepend_ticker(char *dest, uint8_t destsize, char *ticker) {
     memcpy(dest, ticker, ticker_len);
 }
 
-// Set UI for the "Send" screen.
-static void set_send_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *context) {
+static void set_tx_type_ui(ethQueryContractUI_t *msg, sushiswap_parameters_t *context) {
     switch (context->selectorIndex) {
-        case BOILERPLATE_DUMMY_1:
-            strncpy(msg->title, "Send", msg->titleLength);
+        case ADD_LIQUIDITY_ETH:
+            PRINTF("tokenA: %s\n", context->ticker_token_a);
+            strncpy(msg->title, "Liquidity pool:", msg->titleLength);
+            snprintf(msg->msg, msg->msgLength, "%s / %s", context->ticker_token_a, "ETH");
             break;
-        case BOILERPLATE_DUMMY_2:
-            strncpy(msg->title, "Send Max", msg->titleLength);
+        case ADD_LIQUIDITY:
+        case REMOVE_LIQUIDITY:
+        case REMOVE_LIQUIDITY_PERMIT:
+        case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
+            PRINTF("tokenB: %s\n", context->ticker_token_b);
+            strncpy(msg->title, "Liquidity pool:", msg->titleLength);
+            snprintf(msg->msg,
+                     msg->msgLength,
+                     "%s / %s",
+                     context->ticker_token_a,
+                     context->ticker_token_b);
             break;
-        default:
-            PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
-            msg->result = ETH_PLUGIN_RESULT_ERROR;
-            return;
     }
-
-    adjustDecimals((char *) context->amount_sent,
-                   strnlen((char *) context->amount_sent, sizeof(context->amount_sent)),
-                   msg->msg,
-                   msg->msgLength,
-                   context->decimals_sent);
-
-    prepend_ticker(msg->msg, msg->msgLength, context->ticker_sent);
 }
 
-// Set UI for "Receive" screen.
-static void set_receive_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *context) {
+// Set UI for "Warning" screen.
+static void set_token_a_warning_ui(ethQueryContractUI_t *msg,
+                                   sushiswap_parameters_t *context __attribute__((unused))) {
+    strncpy(msg->title, "0000 0010", msg->titleLength);
+    strncpy(msg->msg, "! token A", msg->msgLength);
+}
+
+static void set_token_b_warning_ui(ethQueryContractUI_t *msg,
+                                   sushiswap_parameters_t *context __attribute__((unused))) {
+    strncpy(msg->title, "0000 1000", msg->titleLength);
+    strncpy(msg->msg, "! token B", msg->msgLength);
+}
+
+static void set_amount_token_a_ui(ethQueryContractUI_t *msg, sushiswap_parameters_t *context) {
     switch (context->selectorIndex) {
-        case BOILERPLATE_DUMMY_1:
-            strncpy(msg->title, "Receive Min", msg->titleLength);
+        case ADD_LIQUIDITY_ETH:
+        case ADD_LIQUIDITY:
+            strncpy(msg->title, "Deposit:", msg->titleLength);
             break;
-        case BOILERPLATE_DUMMY_2:
-            strncpy(msg->title, "Receive", msg->titleLength);
+        case REMOVE_LIQUIDITY:
+        case REMOVE_LIQUIDITY_PERMIT:
+        case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
+            strncpy(msg->title, "Remove:", msg->titleLength);
             break;
         default:
             PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;
     }
+    adjustDecimals(
+        (char *) context->token_a_amount_sent,
+        strnlen((char *) context->token_a_amount_sent, sizeof(context->token_a_amount_sent)),
+        msg->msg,
+        msg->msgLength,
+        context->decimals_token_a);
+    prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_a);
+}
 
-    adjustDecimals((char *) context->amount_received,
-                   strnlen((char *) context->amount_received, sizeof(context->amount_received)),
+static void set_amount_token_b_ui(ethQueryContractUI_t *msg, sushiswap_parameters_t *context) {
+    switch (context->selectorIndex) {
+        case ADD_LIQUIDITY_ETH:
+        case ADD_LIQUIDITY:
+            strncpy(msg->title, "Deposit:", msg->titleLength);
+            break;
+        case REMOVE_LIQUIDITY:
+        case REMOVE_LIQUIDITY_PERMIT:
+        case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
+            strncpy(msg->title, "Remove:", msg->titleLength);
+            break;
+        default:
+            PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            return;
+    }
+    adjustDecimals(
+        (char *) context->token_b_amount_sent,
+        strnlen((char *) context->token_b_amount_sent, sizeof(context->token_b_amount_sent)),
+        msg->msg,
+        msg->msgLength,
+        context->decimals_token_b);
+    prepend_ticker(msg->msg, msg->msgLength, context->ticker_token_b);
+}
+
+static void set_amount_eth_ui(ethQueryContractUI_t *msg, sushiswap_parameters_t *context) {
+    switch (context->selectorIndex) {
+        case ADD_LIQUIDITY_ETH:
+            strncpy(msg->title, "Deposit:", msg->titleLength);
+            break;
+        default:
+            PRINTF("Unhandled selector Index: %d\n", context->selectorIndex);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            return;
+    }
+    amountToString((uint8_t *) msg->pluginSharedRO->txContent->value.value,
+                   msg->pluginSharedRO->txContent->value.length,
+                   WEI_TO_ETHER,
+                   "ETH ",
                    msg->msg,
-                   msg->msgLength,
-                   context->decimals_received);
+                   msg->msgLength);
+}
 
-    prepend_ticker(msg->msg, msg->msgLength, context->ticker_received);
+static void set_beneficiary_warning_ui(ethQueryContractUI_t *msg,
+                                       sushiswap_parameters_t *context __attribute__((unused))) {
+    strncpy(msg->title, "0010 0000", msg->titleLength);
+    strncpy(msg->msg, "Not user's address", msg->titleLength);
 }
 
 // Set UI for "Beneficiary" screen.
-static void set_beneficiary_ui(ethQueryContractUI_t *msg, boilerplate_parameters_t *context) {
-    strncpy(msg->title, "Beneficiary", msg->titleLength);
-
+static void set_beneficiary_ui(ethQueryContractUI_t *msg, sushiswap_parameters_t *context) {
+    strncpy(msg->title, "Beneficiary:", msg->titleLength);
     msg->msg[0] = '0';
     msg->msg[1] = 'x';
-
     chain_config_t chainConfig = {0};
-
     getEthAddressStringFromBinary((uint8_t *) context->beneficiary,
                                   (uint8_t *) msg->msg + 2,
                                   msg->pluginSharedRW->sha3,
                                   &chainConfig);
 }
 
-// Set UI for "Warning" screen.
-static void set_warning_ui(ethQueryContractUI_t *msg,
-                           boilerplate_parameters_t *context __attribute__((unused))) {
-    strncpy(msg->title, "WARNING", msg->titleLength);
-    strncpy(msg->msg, "Unknown token", msg->msgLength);
+// Not used if last bit in screen array isn't 1
+static void set_last_ui(ethQueryContractUI_t *msg,
+                        sushiswap_parameters_t *context __attribute__((unused))) {
+    strncpy(msg->title, "1000 0000", msg->titleLength);
+    strncpy(msg->msg, "LAST", msg->titleLength);
 }
 
-// Helper function that returns the enum corresponding to the screen that should
-// be displayed.
-static screens_t get_screen(ethQueryContractUI_t *msg, boilerplate_parameters_t *context) {
-    uint8_t index = msg->screenIndex;
-
-    bool token_sent_found = context->tokens_found & TOKEN_SENT_FOUND;
-    bool token_received_found = context->tokens_found & TOKEN_RECEIVED_FOUND;
-
-    bool both_tokens_found = token_received_found && token_sent_found;
-    bool both_tokens_not_found = !token_received_found && !token_sent_found;
-
-    if (index == 0) {
-        if (both_tokens_found) {
-            return SEND_SCREEN;
-        } else if (both_tokens_not_found) {
-            return WARN_SCREEN;
-        } else if (token_sent_found) {
-            return SEND_SCREEN;
-        } else if (token_received_found) {
-            return WARN_SCREEN;
-        }
-    } else if (index == 1) {
-        if (both_tokens_found) {
-            return RECEIVE_SCREEN;
-        } else if (both_tokens_not_found) {
-            return SEND_SCREEN;
-        } else if (token_sent_found) {
-            return WARN_SCREEN;
-        } else if (token_received_found) {
-            return SEND_SCREEN;
-        }
-    } else if (index == 2) {
-        if (both_tokens_found) {
-            return BENEFICIARY_SCREEN;
-        } else if (both_tokens_not_found) {
-            return WARN_SCREEN;
-        } else {
-            return RECEIVE_SCREEN;
-        }
-    } else if (index == 3) {
-        if (both_tokens_found) {
-            return ERROR;
-        } else if (both_tokens_not_found) {
-            return RECEIVE_SCREEN;
-        } else {
-            return BENEFICIARY_SCREEN;
-        }
-    } else if (index == 4) {
-        if (both_tokens_not_found) {
-            return BENEFICIARY_SCREEN;
-        } else {
-            return ERROR;
-        }
+static void skip_right(ethQueryContractUI_t *msg __attribute__((unused)),
+                       sushiswap_parameters_t *context) {
+    while (!(context->screen_array & context->plugin_screen_index << 1)) {
+        context->plugin_screen_index <<= 1;
     }
-    return ERROR;
+}
+
+static void skip_left(ethQueryContractUI_t *msg __attribute__((unused)),
+                      sushiswap_parameters_t *context) {
+    while (!(context->screen_array & context->plugin_screen_index >> 1)) {
+        context->plugin_screen_index >>= 1;
+    }
+}
+
+static bool get_scroll_direction(uint8_t screen_index, uint8_t previous_screen_index) {
+    if (screen_index > previous_screen_index || screen_index == 0)
+        return RIGHT_SCROLL;
+    else
+        return LEFT_SCROLL;
+}
+
+static void get_screen_array(ethQueryContractUI_t *msg, sushiswap_parameters_t *context) {
+    if (msg->screenIndex == 0) {
+        context->plugin_screen_index = TX_TYPE_UI;
+        context->previous_screen_index = 0;
+        return;
+    }
+    // This should only happen on last valid Screen
+    if (msg->screenIndex == context->previous_screen_index) {
+        context->plugin_screen_index = LAST_UI;
+        if (context->screen_array & LAST_UI) return;
+    }
+    bool scroll_direction = get_scroll_direction(msg->screenIndex, context->previous_screen_index);
+    // Save previous_screen_index after all checks are done.
+    context->previous_screen_index = msg->screenIndex;
+    // Scroll to next screen
+    if (scroll_direction == RIGHT_SCROLL) {
+        skip_right(msg, context);
+        context->plugin_screen_index <<= 1;
+    } else {
+        skip_left(msg, context);
+        context->plugin_screen_index >>= 1;
+    }
 }
 
 void handle_query_contract_ui(void *parameters) {
     ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
-    boilerplate_parameters_t *context = (boilerplate_parameters_t *) msg->pluginContext;
+    sushiswap_parameters_t *context = (sushiswap_parameters_t *) msg->pluginContext;
 
+    get_screen_array(msg, context);
+    print_bytes(&context->plugin_screen_index, 1);
     memset(msg->title, 0, msg->titleLength);
     memset(msg->msg, 0, msg->msgLength);
     msg->result = ETH_PLUGIN_RESULT_OK;
-
-    screens_t screen = get_screen(msg, context);
-    switch (screen) {
-        case SEND_SCREEN:
-            set_send_ui(msg, context);
+    switch (context->plugin_screen_index) {
+        case TX_TYPE_UI:
+            PRINTF("DEVELOPER TX_TYPE\n");
+            set_tx_type_ui(msg, context);
             break;
-        case RECEIVE_SCREEN:
-            set_receive_ui(msg, context);
+        case WARNING_TOKEN_A_UI:
+            PRINTF("DEVELOPER WARNING A\n");
+            set_token_a_warning_ui(msg, context);
             break;
-        case BENEFICIARY_SCREEN:
+        case AMOUNT_TOKEN_A_UI:
+            PRINTF("DEVELOPER AMOUNT A\n");
+            set_amount_token_a_ui(msg, context);
+            break;
+        case WARNING_TOKEN_B_UI:
+            PRINTF("DEVELOPER WARNING B\n");
+            set_token_b_warning_ui(msg, context);
+            break;
+        case AMOUNT_TOKEN_B_UI:
+            if (context->selectorIndex == ADD_LIQUIDITY_ETH) {
+                PRINTF("DEVELOPER AMOUNT ETH\n");
+                set_amount_eth_ui(msg, context);
+            } else {
+                PRINTF("DEVELOPER AMOUNT B\n");
+                set_amount_token_b_ui(msg, context);
+            }
+            break;
+        case WARNING_ADDRESS_UI:
+            PRINTF("DEVELOPER WARNING ADDRESS\n");
+            set_beneficiary_warning_ui(msg, context);
+            break;
+        case ADDRESS_UI:
+            PRINTF("DEVELOPER BENEFICIARY\n");
             set_beneficiary_ui(msg, context);
             break;
-        case WARN_SCREEN:
-            set_warning_ui(msg, context);
+        case LAST_UI:
+            PRINTF("DEVELOPER LAST UI\n");
+            set_last_ui(msg, context);
             break;
         default:
-            PRINTF("Received an invalid screenIndex\n");
-            msg->result = ETH_PLUGIN_RESULT_ERROR;
-            return;
+            PRINTF("DEVELOPER ERROR\n");
+            break;
     }
 }

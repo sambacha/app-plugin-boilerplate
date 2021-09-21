@@ -1,14 +1,32 @@
-#include "boilerplate_plugin.h"
+#include "sushiswap_plugin.h"
+
+static void check_beneficiary_warning(ethPluginFinalize_t *msg, sushiswap_parameters_t *context) {
+    if (memcmp(msg->address, context->beneficiary, ADDRESS_LENGTH)) {
+        PRINTF("DEVELOPER WARNING SET\n");
+        context->screen_array |= WARNING_ADDRESS_UI;
+        msg->numScreens++;
+    }
+}
 
 void handle_finalize(void *parameters) {
     ethPluginFinalize_t *msg = (ethPluginFinalize_t *) parameters;
-    boilerplate_parameters_t *context = (boilerplate_parameters_t *) msg->pluginContext;
-    PRINTF("handle finalize\n");
+    sushiswap_parameters_t *context = (sushiswap_parameters_t *) msg->pluginContext;
+
+    // set generic screen_array
+    context->screen_array |= TX_TYPE_UI;
+    context->screen_array |= AMOUNT_TOKEN_A_UI;
+    context->screen_array |= AMOUNT_TOKEN_B_UI;
+    context->screen_array |= ADDRESS_UI;
+
     if (context->valid) {
         msg->uiType = ETH_UI_TYPE_GENERIC;
-        msg->numScreens = 2;
+        context->plugin_screen_index = TX_TYPE_UI;
+        msg->numScreens = 4;
 
-        msg->tokenLookup1 = context->contract_address_sent;  // TODO: CHECK THIS
+        check_beneficiary_warning(msg, context);
+
+        msg->tokenLookup1 = context->token_a_address;  // TODO: CHECK THIS
+        msg->tokenLookup2 = context->token_b_address;  // TODO: CHECK THIS
         msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Invalid context\n");

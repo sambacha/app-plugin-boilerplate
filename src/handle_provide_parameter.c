@@ -1,39 +1,71 @@
-#include "boilerplate_plugin.h"
+#include "sushiswap_plugin.h"
+
+static void handle_token_a_address(ethPluginProvideParameter_t *msg,
+                                   sushiswap_parameters_t *context) {
+    memset(context->token_a_address, 0, sizeof(context->token_a_address));
+    memcpy(context->token_a_address,
+           &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
+           sizeof(context->token_a_address));
+
+    PRINTF("TOKEN_A_ADDRESS CONTRACT: %.*H\n", ADDRESS_LENGTH, context->token_a_address);
+}
+
+static void handle_token_b_address(ethPluginProvideParameter_t *msg,
+                                   sushiswap_parameters_t *context) {
+    memset(context->token_b_address, 0, sizeof(context->token_b_address));
+    memcpy(context->token_b_address,
+           &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
+           sizeof(context->token_b_address));
+    PRINTF("DEVELOPER TOKEN_B_ADDRESS CONTRACT: %.*H\n", ADDRESS_LENGTH, context->token_b_address);
+}
 
 // Store the amount sent in the form of a string, without any ticker or
 // decimals. These will be added when displaying.
-static void handle_amount_sent(ethPluginProvideParameter_t *msg,
-                               boilerplate_parameters_t *context) {
-    memset(context->amount_sent, 0, sizeof(context->amount_sent));
 
-    // Convert to string.
-    amountToString(msg->parameter,
-                   PARAMETER_LENGTH,
-                   0,
-                   "",
-                   (char *) context->amount_sent,
-                   sizeof(context->amount_sent));
-    PRINTF("AMOUNT SENT: %s\n", context->amount_sent);
-}
+// static void handle_eth_amount(ethPluginProvideParameter_t *msg, sushiswap_parameters_t *context)
+// {
+//     memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
 
-// Store the amount received in the form of a string, without any ticker or
-// decimals. These will be added when displaying.
-static void handle_amount_received(ethPluginProvideParameter_t *msg,
-                                   boilerplate_parameters_t *context) {
-    memset(context->amount_received, 0, sizeof(context->amount_received));
+//     // Convert to string.
+//     amountToString(msg->parameter,
+//                    PARAMETER_LENGTH,
+//                    0,
+//                    "",
+//                    (char *) context->token_b_amount_sent,
+//                    sizeof(context->token_b_amount_sent));
+//     PRINTF("AMOUNT SENT: %s\n", context->token_b_amount_sent);
+// }
+
+static void handle_token_a_amount(ethPluginProvideParameter_t *msg,
+                                  sushiswap_parameters_t *context) {
+    memset(context->token_a_amount_sent, 0, sizeof(context->token_a_amount_sent));
 
     // Convert to string.
     amountToString(msg->parameter,
                    PARAMETER_LENGTH,
                    0,   // No decimals
                    "",  // No ticker
-                   (char *) context->amount_received,
-                   sizeof(context->amount_received));
-    PRINTF("AMOUNT RECEIVED: %s\n", context->amount_received);
+                   (char *) context->token_a_amount_sent,
+                   sizeof(context->token_a_amount_sent));
+
+    PRINTF("TOKEN_A_ADDRESS A AMOUNT SENT: %s\n", context->token_a_amount_sent);
 }
 
-static void handle_beneficiary(ethPluginProvideParameter_t *msg,
-                               boilerplate_parameters_t *context) {
+static void handle_token_b_amount(ethPluginProvideParameter_t *msg,
+                                  sushiswap_parameters_t *context) {
+    memset(context->token_b_amount_sent, 0, sizeof(context->token_b_amount_sent));
+
+    // Convert to string.
+    amountToString(msg->parameter,
+                   PARAMETER_LENGTH,
+                   0,   // No decimals
+                   "",  // No ticker
+                   (char *) context->token_b_amount_sent,
+                   sizeof(context->token_b_amount_sent));
+    PRINTF("PENZO handle_token_b_amount() token_b_amount_sent: %s\n", context->token_b_amount_sent);
+}
+
+static void handle_beneficiary(ethPluginProvideParameter_t *msg, sushiswap_parameters_t *context) {
     memset(context->beneficiary, 0, sizeof(context->beneficiary));
     memcpy(context->beneficiary,
            &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
@@ -41,44 +73,34 @@ static void handle_beneficiary(ethPluginProvideParameter_t *msg,
     PRINTF("BENEFICIARY: %.*H\n", ADDRESS_LENGTH, context->beneficiary);
 }
 
-static void handle_token_sent(ethPluginProvideParameter_t *msg, boilerplate_parameters_t *context) {
-    memset(context->contract_address_sent, 0, sizeof(context->contract_address_sent));
-    memcpy(context->contract_address_sent,
-           &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
-           sizeof(context->contract_address_sent));
-    PRINTF("TOKEN SENT: %.*H\n", ADDRESS_LENGTH, context->contract_address_sent);
-}
-
-static void handle_token_received(ethPluginProvideParameter_t *msg,
-                                  boilerplate_parameters_t *context) {
-    memset(context->contract_address_received, 0, sizeof(context->contract_address_received));
-    memcpy(context->contract_address_received,
-           &msg->parameter[PARAMETER_LENGTH - ADDRESS_LENGTH],
-           sizeof(context->contract_address_received));
-    PRINTF("TOKEN RECIEVED: %.*H\n", ADDRESS_LENGTH, context->contract_address_received);
-}
-
-static void handle_dummy_one(ethPluginProvideParameter_t *msg, boilerplate_parameters_t *context) {
+static void handle_add_liquidity_eth(ethPluginProvideParameter_t *msg,
+                                     sushiswap_parameters_t *context) {
     // Describe ABI
     switch (context->next_param) {
-        case TOKEN_SENT:  // fromToken
-            handle_token_sent(msg, context);
-            context->next_param = TOKEN_RECEIVED;
+        case TOKEN_A_ADDRESS:  // deposited token address
+            handle_token_a_address(msg, context);
+            context->next_param = AMOUNT_TOKEN_A;
             break;
-        case TOKEN_RECEIVED:  // toToken
-            handle_token_received(msg, context);
-            context->next_param = AMOUNT_SENT;
+        case AMOUNT_TOKEN_A:  // token amount deposited
+            handle_token_a_amount(msg, context);
+            PRINTF("after\n");
+            context->next_param = AMOUNT_TOKEN_A_MIN;
             break;
-        case AMOUNT_SENT:  // fromAmount
-            handle_amount_sent(msg, context);
-            context->next_param = AMOUNT_RECEIVED;
+        case AMOUNT_TOKEN_A_MIN:  // not used
+            PRINTF("token min\n");
+            context->next_param = AMOUNT_ETH_MIN;
             break;
-        case AMOUNT_RECEIVED:  // toAmount
-            handle_amount_received(msg, context);
+        case AMOUNT_ETH_MIN:
+            // handle_eth_amount(msg, context); // this is useless as we don't use this variable
+            PRINTF("eth min\n");
             context->next_param = BENEFICIARY;
             break;
-        case BENEFICIARY:  // beneficiary
+        case BENEFICIARY:  // address receiving liquitity tokens
+            PRINTF("benef\n");
             handle_beneficiary(msg, context);
+            context->next_param = DEADLINE;
+            break;
+        case DEADLINE:  // not used
             context->next_param = NONE;
             break;
         case NONE:
@@ -90,27 +112,128 @@ static void handle_dummy_one(ethPluginProvideParameter_t *msg, boilerplate_param
     }
 }
 
-static void handle_dummy_two(ethPluginProvideParameter_t *msg, boilerplate_parameters_t *context) {
+static void handle_add_liquidity(ethPluginProvideParameter_t *msg,
+                                 sushiswap_parameters_t *context) {
     // Describe ABI
+    PRINTF("PENZO handle_add_liquidity\n");
     switch (context->next_param) {
-        case TOKEN_RECEIVED:  // fromToken
-            handle_token_received(msg, context);
-            context->next_param = TOKEN_SENT;
+        case TOKEN_A_ADDRESS:  // sent token address
+            handle_token_a_address(msg, context);
+            context->next_param = TOKEN_B_ADDRESS;
             break;
-        case TOKEN_SENT:  // toToken
-            handle_token_sent(msg, context);
-            context->next_param = AMOUNT_RECEIVED;
+        case TOKEN_B_ADDRESS:  // sent token address
+            handle_token_b_address(msg, context);
+            context->next_param = AMOUNT_TOKEN_A;
             break;
-        case AMOUNT_RECEIVED:  // fromAmount
-            handle_amount_received(msg, context);
-            context->next_param = AMOUNT_SENT;
+        case AMOUNT_TOKEN_A:  // token amount sent
+            handle_token_a_amount(msg, context);
+            PRINTF("after\n");
+            context->next_param = AMOUNT_TOKEN_B;
             break;
-        case AMOUNT_SENT:  // toAmount
-            handle_amount_sent(msg, context);
+        case AMOUNT_TOKEN_B:  // token amount sent
+            handle_token_b_amount(msg, context);
+            PRINTF("after b\n");
+            context->next_param = AMOUNT_TOKEN_A_MIN;
+            break;
+        case AMOUNT_TOKEN_A_MIN:
+            PRINTF("a min\n");
+            context->next_param = AMOUNT_TOKEN_B_MIN;
+            break;
+        case AMOUNT_TOKEN_B_MIN:
+            PRINTF("b min\n");
             context->next_param = BENEFICIARY;
             break;
-        case BENEFICIARY:  // beneficiary
+        case BENEFICIARY:  // receiving address tokens
+            PRINTF("benef\n");
             handle_beneficiary(msg, context);
+            context->next_param = DEADLINE;
+            break;
+        case DEADLINE:
+            context->next_param = NONE;
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_remove_liquidity(ethPluginProvideParameter_t *msg,
+                                    sushiswap_parameters_t *context) {
+    switch (context->next_param) {
+        case TOKEN_A_ADDRESS:
+            PRINTF("PENZO TOKEN_A_ADDRESS\n");
+            handle_token_a_address(msg, context);
+            context->next_param = TOKEN_B_ADDRESS;
+            break;
+        case TOKEN_B_ADDRESS:
+            PRINTF("PENZO TOKEN_A_ADDRESS\n");
+            handle_token_b_address(msg, context);
+            context->next_param = LIQUIDITY;
+            break;
+        case LIQUIDITY:
+            PRINTF("PENZO LIQUIDITY\n");
+            context->next_param = AMOUNT_TOKEN_A_MIN;
+            break;
+        case AMOUNT_TOKEN_A_MIN:
+            PRINTF("PENZO TOKEN_A_MIN\n");
+            handle_token_a_amount(msg, context);
+            context->next_param = AMOUNT_TOKEN_B_MIN;
+            break;
+        case AMOUNT_TOKEN_B_MIN:
+            PRINTF("PENZO ETH MIN\n");
+            handle_token_b_amount(msg, context);
+            context->next_param = BENEFICIARY;
+            break;
+        case BENEFICIARY:
+            PRINTF("PENZO BENEFICIARY\n");
+            handle_beneficiary(msg, context);
+            context->next_param = DEADLINE;
+            break;
+        case DEADLINE:
+            PRINTF("PENZO DEALINE\n");
+            context->next_param = NONE;
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_remove_liquidity_eth(ethPluginProvideParameter_t *msg,
+                                        sushiswap_parameters_t *context) {
+    switch (context->next_param) {
+        case TOKEN_A_ADDRESS:
+            PRINTF("PENZO TOKEN_A_ADDRESS\n");
+            handle_token_a_address(msg, context);
+            context->next_param = LIQUIDITY;
+            break;
+        case LIQUIDITY:
+            PRINTF("PENZO LIQUIDITY\n");
+            context->next_param = AMOUNT_TOKEN_A_MIN;
+            break;
+        case AMOUNT_TOKEN_A_MIN:
+            PRINTF("PENZO TOKEN_A_MIN\n");
+            handle_token_a_amount(msg, context);
+            context->next_param = AMOUNT_ETH_MIN;
+            break;
+        case AMOUNT_ETH_MIN:
+            PRINTF("PENZO ETH MIN\n");
+            handle_token_b_amount(msg, context);
+            context->next_param = BENEFICIARY;
+            break;
+        case BENEFICIARY:
+            PRINTF("PENZO BENEFICIARY\n");
+            handle_beneficiary(msg, context);
+            context->next_param = DEADLINE;
+            break;
+        case DEADLINE:
+            PRINTF("PENZO DEALINE\n");
             context->next_param = NONE;
             break;
         case NONE:
@@ -124,7 +247,7 @@ static void handle_dummy_two(ethPluginProvideParameter_t *msg, boilerplate_param
 
 void handle_provide_parameter(void *parameters) {
     ethPluginProvideParameter_t *msg = (ethPluginProvideParameter_t *) parameters;
-    boilerplate_parameters_t *context = (boilerplate_parameters_t *) msg->pluginContext;
+    sushiswap_parameters_t *context = (sushiswap_parameters_t *) msg->pluginContext;
     PRINTF("plugin provide parameter %d %.*H\n",
            msg->parameterOffset,
            PARAMETER_LENGTH,
@@ -133,11 +256,24 @@ void handle_provide_parameter(void *parameters) {
     msg->result = ETH_PLUGIN_RESULT_OK;
 
     switch (context->selectorIndex) {
-        case BOILERPLATE_DUMMY_1:
-            handle_dummy_one(msg, context);
+        case ADD_LIQUIDITY_ETH:
+            PRINTF("DEVELOPER ADD LIQUIDITY ETH\n");
+            handle_add_liquidity_eth(msg, context);
             break;
-        case BOILERPLATE_DUMMY_2:
-            handle_dummy_two(msg, context);
+        case ADD_LIQUIDITY:
+            PRINTF("DEVELOPER LIQUIDITY\n");
+            handle_add_liquidity(msg, context);
+            break;
+        case REMOVE_LIQUIDITY_ETH:
+        case REMOVE_LIQUIDITY_ETH_PERMIT_FEE:
+        case REMOVE_LIQUIDITY_ETH_PERMIT:
+        case REMOVE_LIQUIDITY_ETH_FEE:
+            PRINTF("DEVELOPER REMOVE LIQUIDITY ETH\n");
+            handle_remove_liquidity_eth(msg, context);
+            break;
+        case REMOVE_LIQUIDITY:
+        case REMOVE_LIQUIDITY_PERMIT:
+            handle_remove_liquidity(msg, context);
             break;
         default:
             PRINTF("Selector Index %d not supported\n", context->selectorIndex);

@@ -1,3 +1,6 @@
+.DS_Store
+node_modules
+
 # Compilation of Ledger's app
 src/glyphs.c
 src/glyphs.h
@@ -6,18 +9,14 @@ debug/
 dep/
 obj/
 
-# Editors
 .idea/
 .vscode
 
-# Python
 *.pyc[cod]
 *.egg
 __pycache__/
 *.egg-info/
 .eggs/
 .python-version
+venv/
 
-# JS
-tests/node_modules
-tests/lib
